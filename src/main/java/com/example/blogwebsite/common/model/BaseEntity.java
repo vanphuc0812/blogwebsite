@@ -1,5 +1,6 @@
 package com.example.blogwebsite.common.model;
 
+import com.example.blogwebsite.common.util.DateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +14,6 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.example.blogwebsite.common.utils.DateTimeUtils;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ public class BaseEntity implements Serializable {
 
     @Version // tự động tăng
     @Column(name = Columns.VERSION)
-    protected int version ;
+    protected int version;
 
     @CreatedBy
     @Column(name = Columns.CREATED_BY)
@@ -57,13 +57,13 @@ public class BaseEntity implements Serializable {
 
     // inner class
     @UtilityClass // class ko có khởi tọa instance
-    static class Columns{
-        static final String ID="ID";
-        static final String VERSION ="VERSION";
-        static final String CREATED_BY ="CREATED_BY";
-        static final String CREATED_AT ="CREATED_AT";
-        static final String LAST_MODIFIED_BY ="LAST_MODIFIED_BY";
-        static final String LAST_MODIFIED_AT ="LAST_MODIFIED_AT";
+    static class Columns {
+        static final String ID = "ID";
+        static final String VERSION = "VERSION";
+        static final String CREATED_BY = "CREATED_BY";
+        static final String CREATED_AT = "CREATED_AT";
+        static final String LAST_MODIFIED_BY = "LAST_MODIFIED_BY";
+        static final String LAST_MODIFIED_AT = "LAST_MODIFIED_AT";
 
     }
 }

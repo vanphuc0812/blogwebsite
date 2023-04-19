@@ -1,10 +1,9 @@
-package com.example.blogwebsite.common.utils;
+package com.example.blogwebsite.common.util;
 
-
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ConstraintViolation;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import jakarta.validation.ConstraintViolationException;
 import lombok.experimental.UtilityClass;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.io.IOException;

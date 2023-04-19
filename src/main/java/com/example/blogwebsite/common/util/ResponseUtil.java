@@ -1,4 +1,4 @@
-package com.example.blogwebsite.common.utils;
+package com.example.blogwebsite.common.util;
 
 import com.example.blogwebsite.common.model.ResponseDTO;
 import jakarta.validation.ConstraintViolationException;
@@ -12,7 +12,7 @@ import java.util.Collections;
 
 @UtilityClass
 public class ResponseUtil {
-    public static ResponseEntity<ResponseDTO> get(Object result, HttpStatus status){
+    public static ResponseEntity<ResponseDTO> get(Object result, HttpStatus status) {
         return new ResponseEntity<>(
                 ResponseDTO.builder()
                         .content(result)
@@ -25,7 +25,7 @@ public class ResponseUtil {
         );
     }
 
-    public static ResponseEntity<ResponseDTO> error(ConstraintViolationException exception, HttpStatus status){
+    public static ResponseEntity<ResponseDTO> error(ConstraintViolationException exception, HttpStatus status) {
         return new ResponseEntity<>(
                 ResponseDTO.builder()
                         .content(null)
@@ -38,7 +38,7 @@ public class ResponseUtil {
         );
     }
 
-    public static ResponseEntity<ResponseDTO> error(RuntimeException exception, HttpStatus status){
+    public static ResponseEntity<ResponseDTO> error(RuntimeException exception, HttpStatus status) {
         return new ResponseEntity<>(
                 ResponseDTO.builder()
                         .content(null)
@@ -51,7 +51,7 @@ public class ResponseUtil {
         );
     }
 
-    public static ResponseEntity<ResponseDTO> errorSaveFile(IOException exception, HttpStatus status){
+    public static ResponseEntity<ResponseDTO> errorSaveFile(IOException exception, HttpStatus status) {
         return new ResponseEntity<>(
                 ResponseDTO.builder()
                         .content(null)

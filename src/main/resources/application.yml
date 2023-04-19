@@ -3,22 +3,39 @@ server:
   forward-headers-strategy: framework
 spring:
   security:
-    user:
-      name: admin
-      password: 1234
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 307631907025-nrsq4dog0i2bg8ll8n9akuposk8deplb.apps.googleusercontent.com
+            clientSecret: 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
+            scope:
+              - email
+              - profile
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: developweb2401@gmail.com
+    password: yfnrtbhzjsyuxnph
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
-    url: jdbc:postgresql://localhost:7777/oracle
-    username: oracle
-    password: oracle
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: update
     generate-ddl: true
     show-sql: true
-    database-platform: org.hibernate.dialect.O
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
-    driver-class-name: oracle.jdbc.driver.OracleDriver
+    driver-class-name: org.postgresql.Driver
   profiles:
     active: dev
   jackson:
