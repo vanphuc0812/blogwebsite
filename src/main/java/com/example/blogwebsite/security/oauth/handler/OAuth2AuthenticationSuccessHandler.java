@@ -1,7 +1,7 @@
 package com.example.blogwebsite.security.oauth.handler;
 
+import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.common.util.ResponseUtil;
-import com.example.blogwebsite.common.util.TCHMapper;
 import com.example.blogwebsite.security.jwt.JwtUtils;
 import com.example.blogwebsite.security.oauth.user.UserPrinciple;
 import com.example.blogwebsite.user.dto.UserDTOWithToken;
@@ -26,9 +26,9 @@ import java.util.Optional;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final TCHMapper mapper;
+    private final BWMapper mapper;
 
-    public OAuth2AuthenticationSuccessHandler(UserRepository userRepository, JwtUtils jwtUtils, TCHMapper mapper) {
+    public OAuth2AuthenticationSuccessHandler(UserRepository userRepository, JwtUtils jwtUtils, BWMapper mapper) {
         this.userRepository = userRepository;
         this.jwtUtils = jwtUtils;
         this.mapper = mapper;

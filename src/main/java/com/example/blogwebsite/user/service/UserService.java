@@ -1,8 +1,8 @@
 package com.example.blogwebsite.user.service;
 
-import com.example.blogwebsite.common.exception.TCHBusinessException;
+import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
-import com.example.blogwebsite.common.util.TCHMapper;
+import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.file.FileService;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
 import com.example.blogwebsite.user.dto.UserDTO;
@@ -46,13 +46,13 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
 class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final TCHMapper tchMapper;
+    private final BWMapper mapper;
     private final FileService fileService;
 
-    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, TCHMapper tchMapper, FileService fileService) {
+    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, FileService fileService) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
-        this.tchMapper = tchMapper;
+        this.mapper = mapper;
         this.fileService = fileService;
     }
 
@@ -63,7 +63,7 @@ class UserServiceImpl implements UserService {
 
     @Override
     public ModelMapper getMapper() {
-        return tchMapper;
+        return mapper;
     }
 
     @Override
@@ -71,7 +71,7 @@ class UserServiceImpl implements UserService {
     public void deleteByUserName(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new TCHBusinessException("User is not existed.")
+                        new BWBusinessException("User is not existed.")
                 );
         user.getUserGroups().forEach(userGroup -> userGroup.removeUser(user));
         userRepository.deleteByUsername(username);
@@ -79,7 +79,7 @@ class UserServiceImpl implements UserService {
 
     public UserDtoWithoutPassword update(UserDtoWithoutPassword userDTO) {
         User user = userRepository.findById(userDTO.getId())
-                .orElseThrow(() -> new TCHBusinessException("User not found"));
+                .orElseThrow(() -> new BWBusinessException("User not found"));
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
         user.setBirth(userDTO.getBirth());
@@ -87,7 +87,7 @@ class UserServiceImpl implements UserService {
         user.setPhone(userDTO.getPhone());
         user.setAddress(userDTO.getAddress());
         user.setGender(User.Gender.valueOf(userDTO.getGender()));
-        return tchMapper.map(user, UserDtoWithoutPassword.class);
+        return mapper.map(user, UserDtoWithoutPassword.class);
     }
 
 
@@ -96,22 +96,22 @@ class UserServiceImpl implements UserService {
         List<UserGroupDTO> userGroupDTOs = new ArrayList<>();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
-                        new TCHBusinessException("User is not existed.")
+                        new BWBusinessException("User is not existed.")
                 );
         user.getUserGroups().forEach(
-                userGroup -> userGroupDTOs.add(tchMapper.map(userGroup, UserGroupDTO.class))
+                userGroup -> userGroupDTOs.add(mapper.map(userGroup, UserGroupDTO.class))
         );
         return userGroupDTOs;
     }
 
     @Override
     public UserDTOWithToken createUser(UserDTO dto) {
-        User user = tchMapper.map(dto, User.class);
+        User user = mapper.map(dto, User.class);
         // encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setProvider(User.Provider.local);
 
-        return tchMapper.map(
+        return mapper.map(
                 userRepository.save(user),
                 UserDTOWithToken.class
         );
@@ -119,25 +119,25 @@ class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getUserByUsername(String username) {
-        return tchMapper.map(userRepository.findByUsername(username), UserDTO.class);
+        return mapper.map(userRepository.findByUsername(username), UserDTO.class);
     }
 
     @Override
     public User findUserByUsername(String username) {
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new TCHBusinessException("username is not existed"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new BWBusinessException("username is not existed"));
     }
 
     @Override
     public UserDTOWithToken saveUserAvatar(String username, MultipartFile file, String baseUrl) {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new TCHBusinessException("User is not existed")
+                new BWBusinessException("User is not existed")
         );
         fileService.init();
         fileService.save(file);
         String urlLoadFile = baseUrl + "/api/Files/" + file.getOriginalFilename();
         user.setAvatar(urlLoadFile);
-        return tchMapper.map(user, UserDTOWithToken.class);
+        return mapper.map(user, UserDTOWithToken.class);
     }
 
     @Override
@@ -145,7 +145,7 @@ class UserServiceImpl implements UserService {
         List<User> users = userRepository.searchUsers(query);
         List<UserDTO> userDTOS = users
                 .stream()
-                .map(model -> tchMapper.map(model, UserDTO.class))
+                .map(model -> mapper.map(model, UserDTO.class))
                 .toList();
         return userDTOS;
     }

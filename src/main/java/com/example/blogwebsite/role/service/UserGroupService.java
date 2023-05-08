@@ -1,8 +1,8 @@
 package com.example.blogwebsite.role.service;
 
-import com.example.blogwebsite.common.exception.TCHBusinessException;
+import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
-import com.example.blogwebsite.common.util.TCHMapper;
+import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
 import com.example.blogwebsite.role.dto.UserGroupWithUsersDTO;
 import com.example.blogwebsite.role.model.UserGroup;
@@ -44,13 +44,13 @@ public interface UserGroupService extends GenericService<UserGroup, UserGroupDTO
 class UserGroupServiceImpl implements UserGroupService {
     private final UserGroupRepository repository;
     private final UserRepository userRepository;
-    private final TCHMapper tchMapper;
+    private final BWMapper BWMapper;
 
 
-    UserGroupServiceImpl(UserGroupRepository repository, UserRepository userRepository, TCHMapper tchMapper) {
+    UserGroupServiceImpl(UserGroupRepository repository, UserRepository userRepository, BWMapper BWMapper) {
         this.repository = repository;
         this.userRepository = userRepository;
-        this.tchMapper = tchMapper;
+        this.BWMapper = BWMapper;
     }
 
     @Override
@@ -60,13 +60,13 @@ class UserGroupServiceImpl implements UserGroupService {
 
     @Override
     public ModelMapper getMapper() {
-        return tchMapper;
+        return BWMapper;
     }
 
     @Override
     public UserGroupWithUsersDTO addUsers(UUID userGroupId, List<UUID> ids) {
         UserGroup userGroup = repository.findById(userGroupId)
-                .orElseThrow(() -> new TCHBusinessException("UserGroup is not existed."));
+                .orElseThrow(() -> new BWBusinessException("UserGroup is not existed."));
 
         ids.forEach(userId -> {
             Optional<User> userOptional = userRepository.findById(userId);
@@ -76,7 +76,7 @@ class UserGroupServiceImpl implements UserGroupService {
                 user.getUserGroups().add(userGroup);
             }
         });
-        return tchMapper.map(userGroup, UserGroupWithUsersDTO.class);
+        return BWMapper.map(userGroup, UserGroupWithUsersDTO.class);
     }
 
     @Override
@@ -85,7 +85,7 @@ class UserGroupServiceImpl implements UserGroupService {
         List<UserGroup> userGroupList = repository.findAll();
         List<UserGroupWithUsersDTO> userGroupWithUsersDTOS = userGroupList
                 .stream()
-                .map(model -> tchMapper.map(model, UserGroupWithUsersDTO.class))
+                .map(model -> BWMapper.map(model, UserGroupWithUsersDTO.class))
                 .toList();
 
         return userGroupWithUsersDTOS;
@@ -93,11 +93,11 @@ class UserGroupServiceImpl implements UserGroupService {
 
     public UserGroupDTO update(UserGroupDTO userGroupDTO) {
         UserGroup userGroup = repository.findById(userGroupDTO.getId())
-                .orElseThrow(() -> new TCHBusinessException("Role not found"));
+                .orElseThrow(() -> new BWBusinessException("Role not found"));
         userGroup.setName(userGroupDTO.getName());
         userGroup.setCode(userGroupDTO.getCode());
         userGroup.setDescription(userGroupDTO.getDescription());
-        return tchMapper.map(userGroup, UserGroupDTO.class);
+        return BWMapper.map(userGroup, UserGroupDTO.class);
     }
 
     @Override
@@ -113,13 +113,13 @@ class UserGroupServiceImpl implements UserGroupService {
                 user.getUserGroups().remove(userGroup);
             }
         });
-        return tchMapper.map(userGroup, UserGroupWithUsersDTO.class);
+        return BWMapper.map(userGroup, UserGroupWithUsersDTO.class);
     }
 
     @Override
     public UserGroupDTO findUserGroupByNameDTO(String name) {
         Optional<UserGroup> userGroup = repository.findByName(name);
-        return tchMapper.map(userGroup, UserGroupDTO.class);
+        return BWMapper.map(userGroup, UserGroupDTO.class);
     }
 
     @Override
@@ -133,7 +133,7 @@ class UserGroupServiceImpl implements UserGroupService {
         List<UserGroup> userGroups = repository.searchUserGroups(query);
         List<UserGroupDTO> userGroupDTOS = userGroups
                 .stream()
-                .map(model -> tchMapper.map(model, UserGroupDTO.class))
+                .map(model -> BWMapper.map(model, UserGroupDTO.class))
                 .toList();
         return userGroupDTOS;
     }

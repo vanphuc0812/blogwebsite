@@ -1,8 +1,8 @@
 package com.example.blogwebsite.role.service;
 
-import com.example.blogwebsite.common.exception.TCHBusinessException;
+import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
-import com.example.blogwebsite.common.util.TCHMapper;
+import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.role.dto.OperationDTO;
 import com.example.blogwebsite.role.model.Operation;
 import com.example.blogwebsite.role.model.Role;
@@ -39,10 +39,10 @@ public interface OperationService extends GenericService<Operation, OperationDTO
 class OperationServiceImpl implements OperationService {
     private final OperationRepository operationRepository;
     private final RoleRepository roleRepository;
-    private final TCHMapper mapper;
-    private TCHBusinessException roleIsNotExisted = new TCHBusinessException("role is not existed");
+    private final BWMapper mapper;
+    private BWBusinessException roleIsNotExisted = new BWBusinessException("role is not existed");
 
-    OperationServiceImpl(OperationRepository operationRepository, RoleRepository roleRepository, TCHMapper mapper) {
+    OperationServiceImpl(OperationRepository operationRepository, RoleRepository roleRepository, BWMapper mapper) {
         this.operationRepository = operationRepository;
         this.roleRepository = roleRepository;
         this.mapper = mapper;
@@ -77,7 +77,7 @@ class OperationServiceImpl implements OperationService {
     @Override
     public OperationDTO update(OperationDTO operationDTO) {
         Operation operation = operationRepository.findById(operationDTO.getId())
-                .orElseThrow(() -> new TCHBusinessException("Operation not found"));
+                .orElseThrow(() -> new BWBusinessException("Operation not found"));
         operation.setName(operationDTO.getName());
         operation.setCode(operationDTO.getCode());
         operation.setDescription(operationDTO.getDescription());

@@ -1,8 +1,8 @@
 package com.example.blogwebsite.security.service;
 
-import com.example.blogwebsite.common.exception.TCHBusinessException;
+import com.example.blogwebsite.common.exception.BWBusinessException;
+import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.common.util.PasswordGenerateUtils;
-import com.example.blogwebsite.common.util.TCHMapper;
 import com.example.blogwebsite.role.model.UserGroup;
 import com.example.blogwebsite.role.repository.UserGroupRepository;
 import com.example.blogwebsite.security.dto.LoginDTO;
@@ -42,14 +42,14 @@ class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserGroupRepository userGroupRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TCHMapper mapper;
+    private final BWMapper mapper;
     private final JwtUtils jwtUtils;
 
     private final JavaMailSender javaMailSender;
     @Value("${spring.mail.username}")
     private String sender;
 
-    AuthServiceImpl(UserRepository userRepository, UserGroupRepository userGroupRepository, PasswordEncoder passwordEncoder, TCHMapper mapper, JwtUtils jwtUtils, JavaMailSender javaMailSender) {
+    AuthServiceImpl(UserRepository userRepository, UserGroupRepository userGroupRepository, PasswordEncoder passwordEncoder, BWMapper mapper, JwtUtils jwtUtils, JavaMailSender javaMailSender) {
         this.userRepository = userRepository;
         this.userGroupRepository = userGroupRepository;
         this.passwordEncoder = passwordEncoder;
@@ -62,7 +62,7 @@ class AuthServiceImpl implements AuthService {
     public UserDTOWithToken login(LoginDTO dto) {
         User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(
-                        () -> new TCHBusinessException("User is not existed")
+                        () -> new BWBusinessException("User is not existed")
                 );
 
         if (passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
@@ -72,7 +72,7 @@ class AuthServiceImpl implements AuthService {
             return userDTOWithToken;
         }
 
-        throw new TCHBusinessException("Password is not correct.");
+        throw new BWBusinessException("Password is not correct.");
     }
 
     @Override
@@ -101,7 +101,7 @@ class AuthServiceImpl implements AuthService {
 
     @Override
     public String forgotPassword(String email, String feHomePage, String host) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new TCHBusinessException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BWBusinessException("User not found"));
         String code = jwtUtils.generateJwt(email);
         try {
             String url = host + "/auth/resetPassword?code=" + code + "&redirectUri=" + feHomePage;
@@ -136,7 +136,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     public boolean resetPassword(String code) {
         String email = jwtUtils.getUsername(code);
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new TCHBusinessException("User not found"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BWBusinessException("User not found"));
         String newPassword = PasswordGenerateUtils.generateCommonLangPassword();
         try {
             MimeMessage mailMessage = javaMailSender.createMimeMessage();
@@ -167,7 +167,7 @@ class AuthServiceImpl implements AuthService {
     @Override
     public UserDTOWithToken changePassword(String username, String newPassword, String oldPassword) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new TCHBusinessException("User not found: " + username));
+                .orElseThrow(() -> new BWBusinessException("User not found: " + username));
         if (passwordEncoder.matches(oldPassword, user.getPassword())) {
             user.setPassword(passwordEncoder.encode(newPassword));
         }
