@@ -1,6 +1,6 @@
 package com.example.blogwebsite.security.service;
 
-import com.example.blogwebsite.common.exception.TCHBusinessException;
+import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.security.oauth.user.UserPrinciple;
 import com.example.blogwebsite.user.model.User;
 import com.example.blogwebsite.user.repository.UserRepository;
@@ -22,7 +22,7 @@ public class UserPrincipleService implements UserDetailsService {
     public UserPrinciple loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new TCHBusinessException("User is not existed.")
+                        () -> new BWBusinessException("User is not existed.")
                 );
 
         return new UserPrinciple(

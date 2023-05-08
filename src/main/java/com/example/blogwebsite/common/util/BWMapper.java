@@ -4,5 +4,5 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TCHMapper extends ModelMapper {
+public class BWMapper extends ModelMapper {
 }

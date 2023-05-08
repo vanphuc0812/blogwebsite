@@ -1,5 +1,7 @@
 package com.example.blogwebsite.user.model;
 
+import com.example.blogwebsite.blogpost.model.Blog;
+import com.example.blogwebsite.blogpost.model.BlogEntity;
 import com.example.blogwebsite.common.model.BaseEntity;
 import com.example.blogwebsite.role.model.RoleEntity;
 import com.example.blogwebsite.role.model.UserGroup;
@@ -67,6 +69,9 @@ public class User extends BaseEntity {
     private String token;
     @Enumerated(EnumType.STRING)
     private Provider provider;
+
+    @OneToMany(mappedBy = BlogEntity.BlogPostMappedToUser.BLOG_MAPPED_USER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Blog> blogs = new LinkedHashSet<>();
 
     public enum Gender {
         MALE,

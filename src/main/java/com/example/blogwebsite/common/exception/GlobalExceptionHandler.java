@@ -28,10 +28,10 @@ public class GlobalExceptionHandler {
         return ResponseUtil.error(exception, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(TCHBusinessException.class)
+    @ExceptionHandler(BWBusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ResponseDTO> handleLoginException(
-            TCHBusinessException exception
+            BWBusinessException exception
     ) {
         return ResponseUtil.error(exception, HttpStatus.BAD_REQUEST);
     }
