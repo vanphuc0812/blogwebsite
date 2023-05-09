@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.service;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.blogpost.repository.BlogRepository;
 import com.example.blogwebsite.common.exception.BWBusinessException;
@@ -22,7 +23,9 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
 
     BlogDTO save(BlogDTO blogDTO);
 
-    Object removeBlog(UUID blogID);
+    void deleteBlog(UUID blogID);
+
+    BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO);
 }
 
 @Service
@@ -68,11 +71,18 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public Object removeBlog(UUID blogID) {
+    public void deleteBlog(UUID blogID) {
         Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException("Could not find blog"));
         User user = blog.getUser();
         user.getBlogs().remove(blog);
         blogRepository.deleteById(blogID);
-        return null;
+    }
+
+    @Override
+    public BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO) {
+        Blog blog = blogRepository.findById(blogDTO.getId()).orElseThrow(() -> new BWBusinessException(""));
+        if (blogDTO.getTitle() != null) blog.setTitle(blogDTO.getTitle());
+        if (blogDTO.getContent() != null) blog.setContent(blogDTO.getContent());
+        return mapper.map(blog, BlogUpdateDTO.class);
     }
 }

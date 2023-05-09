@@ -15,8 +15,8 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = BlogEntity.BlogPost.TABLE_NAME)
 public class Blog extends BaseEntity {
-    
-    @Column(name = BlogEntity.BlogPost.TITLE)
+
+    @Column(name = BlogEntity.BlogPost.TITLE, nullable = false, unique = true)
     private String title;
     @Column(name = BlogEntity.BlogPost.CONTENT)
     private String content;

@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.boundary;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.service.BlogService;
 import com.example.blogwebsite.common.util.ResponseUtil;
 import jakarta.validation.Valid;
@@ -41,8 +42,15 @@ public class BlogRestResource {
 
     @DeleteMapping("/DeleteBlog")
     public Object deleteBlog(@RequestParam UUID blogID) {
+        blogService.deleteBlog(blogID);
+        return HttpStatus.OK;
+
+    }
+
+    @PutMapping("/UpdateBlog")
+    public Object updateBlog(@RequestBody BlogUpdateDTO blogDTO) {
         return ResponseUtil.get(
-                blogService.removeBlog(blogID)
+                blogService.updateBlog(blogDTO)
                 , HttpStatus.OK
         );
     }
