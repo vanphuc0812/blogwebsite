@@ -1,9 +1,11 @@
 package com.example.blogwebsite.security.config;
 
+import com.example.blogwebsite.config.SimpleCORSFilter;
 import com.example.blogwebsite.security.jwt.JwtAuthenticationFilter;
 import com.example.blogwebsite.security.oauth.CustomOAuth2UserService;
 import com.example.blogwebsite.security.oauth.RestAuthenticationEntryPoint;
 import com.example.blogwebsite.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,6 +55,14 @@ public class SecurityConfig {
         return authConfiguration.getAuthenticationManager();
     }
 
+    @Bean
+    public FilterRegistrationBean<SimpleCORSFilter> myFilterRegistration() {
+        FilterRegistrationBean<SimpleCORSFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new SimpleCORSFilter());
+        registration.addUrlPatterns("/*");
+        registration.setOrder(1); // Thứ tự ưu tiên của filter (nếu có nhiều filter)
+        return registration;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
