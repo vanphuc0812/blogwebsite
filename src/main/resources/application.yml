@@ -31,12 +31,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     enabled: false
-    driver-class-name: org.postgresql.Driver
   profiles:
     active: dev
   jackson:
