@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/UsersManagement")
@@ -65,6 +67,13 @@ public class UserRestResource {
         );
     }
 
+    @PostMapping("/SaveUsers")
+    public Object saveUsers(@RequestBody @Valid List<UserDTO> userDTOs) {
+        return ResponseUtil.get(
+                userService.createUsers(userDTOs)
+                , HttpStatus.OK
+        );
+    }
 
     @PostMapping(path = "/saveUserAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Object saveUserAvatar(@RequestParam("username") String username, @RequestPart("avatar") MultipartFile avatar, HttpServletRequest request) {

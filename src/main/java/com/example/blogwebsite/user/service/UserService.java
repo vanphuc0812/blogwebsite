@@ -5,6 +5,7 @@ import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
 import com.example.blogwebsite.file.FileService;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
+import com.example.blogwebsite.security.jwt.JwtUtils;
 import com.example.blogwebsite.user.dto.UserDTO;
 import com.example.blogwebsite.user.dto.UserDTOWithToken;
 import com.example.blogwebsite.user.dto.UserDtoWithoutPassword;
@@ -39,6 +40,8 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
     UserDTOWithToken saveUserAvatar(String username, MultipartFile file, String baseUrl);
 
     List<UserDTO> searchUsers(String query);
+
+    List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs);
 }
 
 @Service
@@ -48,12 +51,14 @@ class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BWMapper mapper;
     private final FileService fileService;
+    private final JwtUtils jwtUtils;
 
-    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, FileService fileService) {
+    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, FileService fileService, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mapper = mapper;
         this.fileService = fileService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -82,10 +87,7 @@ class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BWBusinessException("User not found"));
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
-        user.setBirth(userDTO.getBirth());
         user.setAvatar(userDTO.getAvatar());
-        user.setPhone(userDTO.getPhone());
-        user.setAddress(userDTO.getAddress());
         user.setGender(User.Gender.valueOf(userDTO.getGender()));
         return mapper.map(user, UserDtoWithoutPassword.class);
     }
@@ -115,6 +117,21 @@ class UserServiceImpl implements UserService {
                 userRepository.save(user),
                 UserDTOWithToken.class
         );
+    }
+
+    @Override
+    public List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs) {
+
+        return userDTOs.stream().map((userDTO) -> {
+            User user = mapper.map(userDTO, User.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setProvider(User.Provider.local);
+            user.setToken(jwtUtils.generateJwt(user.getUsername()));
+            return mapper.map(
+                    userRepository.save(user),
+                    UserDTOWithToken.class
+            );
+        }).toList();
     }
 
     @Override
@@ -149,5 +166,6 @@ class UserServiceImpl implements UserService {
                 .toList();
         return userDTOS;
     }
+
 
 }

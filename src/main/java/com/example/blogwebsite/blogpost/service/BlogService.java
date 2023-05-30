@@ -7,6 +7,7 @@ import com.example.blogwebsite.blogpost.repository.BlogRepository;
 import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
+import com.example.blogwebsite.common.util.DateTimeUtils;
 import com.example.blogwebsite.user.model.User;
 import com.example.blogwebsite.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -61,19 +62,20 @@ class BlogServiceImpl implements BlogService {
 
     @Override
     public BlogDTO save(BlogDTO blogDTO) {
-        User user = userRepository.findByUsername(blogDTO.getUsername()).orElseThrow(() ->
+        User user = userRepository.findByUsername(blogDTO.getUser().getUsername()).orElseThrow(() ->
                 new BWBusinessException("User is not existed")
         );
 
         Blog blog = mapper.map(blogDTO, Blog.class);
         blog.setUser(user);
+        blog.setPublishedAt(DateTimeUtils.now());
         return mapper.map(blogRepository.save(blog), BlogDTO.class);
     }
 
     @Override
     public void deleteBlog(UUID blogID) {
         Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException("Could not find blog"));
-        User user = blog.getUser();
+        User user = mapper.map(blog.getUser(), User.class);
         user.getBlogs().remove(blog);
         blogRepository.deleteById(blogID);
     }

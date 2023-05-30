@@ -20,11 +20,7 @@ public class UserDtoWithoutPassword {
     private String username;
     @NotBlank(message = "{user.email.blank}")
     private String email;
-    private String birth;
     private String avatar;
-    private String phone;
-    private String address;
-
     @CorrectGender(message = "{user.gender.incorrect}")
     private String gender;
 }
