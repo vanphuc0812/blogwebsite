@@ -24,9 +24,10 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: 1234
+    url: jdbc:postgresql://dpg-chqbfundvk4goerbavn0-a.singapore-postgres.render.com:5432/plog
+    username: vanphuc2401
+    password: dn273FAZq6mt7FKd1SXnvNIzC1AqGDx6
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
