@@ -3,7 +3,6 @@ package com.example.blogwebsite.security.config;
 import com.example.blogwebsite.config.SimpleCORSFilter;
 import com.example.blogwebsite.security.jwt.JwtAuthenticationFilter;
 import com.example.blogwebsite.security.oauth.CustomOAuth2UserService;
-import com.example.blogwebsite.security.oauth.RestAuthenticationEntryPoint;
 import com.example.blogwebsite.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -77,28 +76,29 @@ public class SecurityConfig {
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // API Authentication
-        http
-                .formLogin()
-                .disable()
-                .httpBasic()
-                .disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
-                .and()
-                .authorizeRequests()
-                .requestMatchers("/", "/login/**", "/oauth2/**", "/oauth/**", "/auth/**", "/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**").permitAll()
-                .requestMatchers("/api/ProductsManagement/common/**", "/api/ProductGroupManagement/common/**", "/api/CurrencyMangement/common/**").permitAll()
-                .requestMatchers("/api/v1/business/common/**", "/api/v1/discount/common/**").permitAll()
-                .requestMatchers("/api/v1/payment/billing-infomation").permitAll()
-                .requestMatchers("/api/Files/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .oauth2Login()
-                .loginPage("/login")
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService)
-                .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler);
+        http.authorizeRequests().anyRequest()
+                .permitAll();
+        //                .formLogin()
+//                .disable()
+//                .httpBasic()
+//                .disable()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+//                .and()
+//                .authorizeRequests()
+//                .requestMatchers("/", "/login/**", "/oauth2/**", "/oauth/**", "/auth/**", "/v3/api-docs/**", "/swagger-ui.html/**", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**").permitAll()
+//                .requestMatchers("/api/ProductsManagement/common/**", "/api/ProductGroupManagement/common/**", "/api/CurrencyMangement/common/**").permitAll()
+//                .requestMatchers("/api/v1/business/common/**", "/api/v1/discount/common/**").permitAll()
+//                .requestMatchers("/api/v1/payment/billing-infomation").permitAll()
+//                .requestMatchers("/api/Files/**").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .oauth2Login()
+//                .loginPage("/login")
+//                .userInfoEndpoint()
+//                .userService(customOAuth2UserService)
+//                .and()
+//                .successHandler(oAuth2AuthenticationSuccessHandler);
 
         http.authenticationProvider(authenticationProvider());
 

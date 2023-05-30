@@ -18,5 +18,8 @@ public class BlogEntity {
         public static final String TABLE_NAME = "BW_BLOGPOST";
         public static final String TITLE = "BW_TITLE";
         public static final String CONTENT = "BW_CONTENT";
+        public static final String CONTENT_SHORT = "BW_CONTENT_SHORT";
+        public static final String TRANSLITERATE = "BW_TRANSLITERATE";
+        public static final String PUBLISHED_AT = "BW_PUBLISHED_AT";
     }
 }

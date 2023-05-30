@@ -22,11 +22,7 @@ public class UserDTOWithToken {
     private String username;
     @NotBlank(message = "{user.email.blank}")
     private String email;
-    private String birth;
     private String avatar;
-    @NotBlank(message = "{user.phone.blank}")
-    private String phone;
-    private String address;
 
     private String token;
     @CorrectGender(message = "{user.gender.incorrect}")
