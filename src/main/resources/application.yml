@@ -27,10 +27,14 @@ spring:
     url: jdbc:postgresql://dpg-chqbfundvk4goerbavn0-a.singapore-postgres.render.com:5432/plog
     username: vanphuc2401
     password: dn273FAZq6mt7FKd1SXnvNIzC1AqGDx6
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   flyway:
