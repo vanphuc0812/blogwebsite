@@ -39,7 +39,7 @@ spring:
   flyway:
     enabled: false
   profiles:
-    active: dev
+    active: deploy
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
