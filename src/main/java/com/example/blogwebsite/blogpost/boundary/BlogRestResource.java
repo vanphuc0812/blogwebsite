@@ -27,6 +27,14 @@ public class BlogRestResource {
         );
     }
 
+    @GetMapping("/SearchBlogs")
+    public Object searchBlogs(@RequestParam String keyword, @RequestParam String type) {
+        return ResponseUtil.get(
+                blogService.searchBlogs(keyword, type)
+                , HttpStatus.OK
+        );
+    }
+
     @GetMapping("/GetBlogsByUsername")
     public Object getBlogsByUser(@RequestParam String username) {
         return ResponseUtil.get(
