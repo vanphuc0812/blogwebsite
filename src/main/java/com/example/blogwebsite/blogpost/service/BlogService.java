@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.service;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogSaveDTO;
 import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.blogpost.repository.BlogRepository;
@@ -21,13 +22,17 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
 
     List<BlogDTO> findBlogsByUsername(String username);
 
-    BlogDTO save(BlogDTO blogDTO);
+    BlogDTO save(BlogSaveDTO blogDTO);
+
+    List<BlogDTO> saveMultiple(List<BlogSaveDTO> blogDTOs);
 
     void deleteBlog(UUID blogID);
 
     BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO);
 
     List<BlogDTO> searchBlogs(String searchKeyWord, String type);
+
+
 }
 
 @Service
@@ -78,12 +83,30 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogDTO save(BlogDTO blogDTO) {
-        User user = userRepository.findByUsername(blogDTO.getUser().getUsername()).orElseThrow(() ->
+    public List<BlogDTO> saveMultiple(List<BlogSaveDTO> blogDTOs) {
+        return blogDTOs.stream().map((blogDTO) -> {
+            User user = userRepository.findByUsername(blogDTO.getUsername()).orElseThrow(() ->
+                    new BWBusinessException("User is not existed")
+            );
+            Blog blog = mapper.map(blogDTO, Blog.class);
+            blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
+            blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
+            blog.setUser(user);
+
+            return mapper.map(blogRepository.save(blog), BlogDTO.class);
+        }).toList();
+
+    }
+
+    @Override
+    public BlogDTO save(BlogSaveDTO blogDTO) {
+        User user = userRepository.findByUsername(blogDTO.getUsername()).orElseThrow(() ->
                 new BWBusinessException("User is not existed")
         );
 
         Blog blog = mapper.map(blogDTO, Blog.class);
+        blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
+        blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
         blog.setUser(user);
         return mapper.map(blogRepository.save(blog), BlogDTO.class);
     }
@@ -99,8 +122,14 @@ class BlogServiceImpl implements BlogService {
     @Override
     public BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO) {
         Blog blog = blogRepository.findById(blogDTO.getId()).orElseThrow(() -> new BWBusinessException(""));
-        if (blogDTO.getTitle() != null) blog.setTitle(blogDTO.getTitle());
-        if (blogDTO.getContent() != null) blog.setContent(blogDTO.getContent());
+        if (blogDTO.getTitle() != null) {
+            blog.setTitle(blogDTO.getTitle());
+            blog.setTransliterated(blogDTO.getTitle().replace(" ", "-"));
+        }
+        if (blogDTO.getContent() != null) {
+            blog.setContent(blogDTO.getContent());
+            blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
+        }
         return mapper.map(blog, BlogUpdateDTO.class);
     }
 

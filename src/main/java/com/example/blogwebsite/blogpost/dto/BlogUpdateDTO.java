@@ -16,6 +16,4 @@ public class BlogUpdateDTO {
     private String title;
     private String content;
     private String shortContent;
-    private String transliterated;
-    private String publishedAt;
 }
