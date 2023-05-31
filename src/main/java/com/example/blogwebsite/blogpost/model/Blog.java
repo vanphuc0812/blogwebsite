@@ -1,15 +1,12 @@
 package com.example.blogwebsite.blogpost.model;
 
 import com.example.blogwebsite.common.model.BaseEntity;
-import com.example.blogwebsite.common.util.DateTimeUtils;
 import com.example.blogwebsite.user.model.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -27,10 +24,7 @@ public class Blog extends BaseEntity {
     private String shortContent;
     @Column(name = BlogEntity.BlogPost.TRANSLITERATE)
     private String transliterated;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateTimeUtils.DATETIME_FORMAT)
-    @DateTimeFormat(pattern = DateTimeUtils.DATETIME_FORMAT)
-    @Column(name = BlogEntity.BlogPost.PUBLISHED_AT)
-    private String publishedAt;
+
 
     @ManyToOne
     @JoinTable(

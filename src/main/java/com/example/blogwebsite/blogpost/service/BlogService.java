@@ -7,7 +7,6 @@ import com.example.blogwebsite.blogpost.repository.BlogRepository;
 import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
-import com.example.blogwebsite.common.util.DateTimeUtils;
 import com.example.blogwebsite.user.model.User;
 import com.example.blogwebsite.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -27,6 +26,8 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
     void deleteBlog(UUID blogID);
 
     BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO);
+
+    List<BlogDTO> searchBlogs(String searchKeyWord, String type);
 }
 
 @Service
@@ -53,6 +54,22 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public List<BlogDTO> searchBlogs(String searchKeyWord, String type) {
+        if ("less".equals(type)) {
+            return blogRepository.search10BlogPosts(searchKeyWord)
+                    .stream()
+                    .map(blog -> mapper.map(blog, BlogDTO.class))
+                    .toList();
+        } else {
+            return blogRepository.searchBlogPosts(searchKeyWord)
+                    .stream()
+                    .map(blog -> mapper.map(blog, BlogDTO.class))
+                    .toList();
+        }
+
+    }
+
+    @Override
     public List<BlogDTO> findBlogsByUsername(String username) {
         return blogRepository.searchBlogPostByUsername(username)
                 .stream()
@@ -68,7 +85,6 @@ class BlogServiceImpl implements BlogService {
 
         Blog blog = mapper.map(blogDTO, Blog.class);
         blog.setUser(user);
-        blog.setPublishedAt(DateTimeUtils.now());
         return mapper.map(blogRepository.save(blog), BlogDTO.class);
     }
 
@@ -87,4 +103,5 @@ class BlogServiceImpl implements BlogService {
         if (blogDTO.getContent() != null) blog.setContent(blogDTO.getContent());
         return mapper.map(blog, BlogUpdateDTO.class);
     }
+
 }
