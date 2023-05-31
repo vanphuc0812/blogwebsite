@@ -20,7 +20,6 @@ public interface BlogRepository extends JpaRepository<Blog, UUID> {
                    ELSE 2
                  END,
                  p.title ASC
-               LIMIT 10
             """)
     List<Blog> searchBlogPosts(String query);
 
@@ -33,6 +32,7 @@ public interface BlogRepository extends JpaRepository<Blog, UUID> {
                    ELSE 2
                  END,
                  p.title ASC
+               LIMIT 10
             """)
     List<Blog> search10BlogPosts(String query);
 

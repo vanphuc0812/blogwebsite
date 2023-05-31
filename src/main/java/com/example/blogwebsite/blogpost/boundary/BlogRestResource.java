@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.boundary;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogSaveDTO;
 import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.service.BlogService;
 import com.example.blogwebsite.common.util.ResponseUtil;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -44,8 +46,13 @@ public class BlogRestResource {
     }
 
     @PostMapping("/SaveBlog")
-    public Object saveBlog(@RequestBody @Valid BlogDTO blogDTO) {
+    public Object saveBlog(@RequestBody @Valid BlogSaveDTO blogDTO) {
         return ResponseUtil.get(blogService.save(blogDTO), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/SaveBlogs")
+    public Object saveBlogs(@RequestBody @Valid List<BlogSaveDTO> blogDTOs) {
+        return ResponseUtil.get(blogService.saveMultiple(blogDTOs), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/DeleteBlog")
