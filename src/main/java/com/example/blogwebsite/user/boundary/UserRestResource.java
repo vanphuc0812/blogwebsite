@@ -14,7 +14,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/UsersManagement")
 
@@ -44,9 +43,9 @@ public class UserRestResource {
     }
 
 
-    @GetMapping("/common/Search")
-    public Object searchUser(@RequestParam("query") String query) {
-        return ResponseUtil.get(userService.searchUsers(query), HttpStatus.OK);
+    @GetMapping("/SearchUsers")
+    public Object searchUser(@RequestParam String keyword, @RequestParam String type) {
+        return ResponseUtil.get(userService.searchUsers(keyword, type), HttpStatus.OK);
     }
 
 
