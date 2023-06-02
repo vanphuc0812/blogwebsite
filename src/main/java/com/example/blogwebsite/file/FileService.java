@@ -1,52 +1,41 @@
 package com.example.blogwebsite.file;
 
+import com.example.blogwebsite.common.util.FileUtil;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.List;
 
 
 public interface FileService {
-    public void init();
 
-    public void save(MultipartFile file);
+    public String save(MultipartFile file);
+
+    public void saveMultiple(List<MultipartFile> files);
 
     public Resource load(String fileName);
 }
 
 @Service
 class FileServiceImp implements FileService {
-    private final Path root = Paths.get("images");
 
     @Override
-    public void init() {
-        try {
-            if (!Files.exists(root)) {
-                // Tạo folder root
-                Files.createDirectory(root);
-            }
-        } catch (Exception e) {
-            System.out.println("Error create root folder" + e.getMessage()); // chuyển về logger sau
-        }
+    public String save(MultipartFile file) {
+        return FileUtil.saveFile(file);
     }
 
     @Override
-    public void save(MultipartFile file) {
-        try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
-        } catch (Exception e) {
-            System.out.println("Error save file to root folder" + e.getMessage()); // chuyển về logger sau
-        }
+    public void saveMultiple(List<MultipartFile> files) {
+        files.forEach(FileUtil::saveFile);
     }
 
     @Override
     public Resource load(String fileName) {
         try {
-            Path file = this.root.resolve(fileName);
+            Path file = FileUtil.ROOTPATH.resolve(fileName);
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() || resource.isReadable()) {
                 return resource;

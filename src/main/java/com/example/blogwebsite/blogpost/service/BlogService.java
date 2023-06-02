@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.service;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogDTOWithoutContent;
 import com.example.blogwebsite.blogpost.dto.BlogSaveDTO;
 import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.model.Blog;
@@ -30,7 +31,7 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
 
     BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO);
 
-    List<BlogDTO> searchBlogs(String searchKeyWord, String type);
+    <T> List<T> searchBlogs(String searchKeyWord, String type);
 
 
 }
@@ -59,19 +60,18 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public List<BlogDTO> searchBlogs(String searchKeyWord, String type) {
+    public <T> List<T> searchBlogs(String searchKeyWord, String type) {
         if ("less".equals(type)) {
-            return blogRepository.search10BlogPosts(searchKeyWord)
+            return (List<T>) blogRepository.search10BlogPosts(searchKeyWord)
                     .stream()
-                    .map(blog -> mapper.map(blog, BlogDTO.class))
+                    .map(blog -> mapper.map(blog, BlogDTOWithoutContent.class))
                     .toList();
         } else {
-            return blogRepository.searchBlogPosts(searchKeyWord)
+            return (List<T>) blogRepository.searchBlogPosts(searchKeyWord)
                     .stream()
                     .map(blog -> mapper.map(blog, BlogDTO.class))
                     .toList();
         }
-
     }
 
     @Override
