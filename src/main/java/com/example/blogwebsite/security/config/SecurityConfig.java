@@ -1,10 +1,8 @@
 package com.example.blogwebsite.security.config;
 
-import com.example.blogwebsite.config.SimpleCORSFilter;
 import com.example.blogwebsite.security.jwt.JwtAuthenticationFilter;
 import com.example.blogwebsite.security.oauth.CustomOAuth2UserService;
 import com.example.blogwebsite.security.oauth.handler.OAuth2AuthenticationSuccessHandler;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -53,16 +53,15 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
         return authConfiguration.getAuthenticationManager();
     }
-
     @Bean
-    public FilterRegistrationBean<SimpleCORSFilter> myFilterRegistration() {
-        FilterRegistrationBean<SimpleCORSFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(new SimpleCORSFilter());
-        registration.addUrlPatterns("/*");
-        registration.setOrder(1); // Thứ tự ưu tiên của filter (nếu có nhiều filter)
-        return registration;
+    public WebMvcConfigurer webConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry reg) {
+                reg.addMapping("/**").allowedOrigins("*");
+            }
+        };
     }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CROSS ORIGIN
