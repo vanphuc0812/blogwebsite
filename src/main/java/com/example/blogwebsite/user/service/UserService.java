@@ -3,7 +3,8 @@ package com.example.blogwebsite.user.service;
 import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
-import com.example.blogwebsite.file.FileService;
+import com.example.blogwebsite.common.util.CustomRandom;
+import com.example.blogwebsite.common.util.FileUtil;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
 import com.example.blogwebsite.security.jwt.JwtUtils;
 import com.example.blogwebsite.user.dto.UserDTO;
@@ -39,7 +40,7 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
 
     UserDTOWithToken saveUserAvatar(String username, MultipartFile file, String baseUrl);
 
-    List<UserDTO> searchUsers(String query);
+    List<UserDTO> searchUsers(String query, String type);
 
     List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs);
 }
@@ -50,14 +51,12 @@ class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final BWMapper mapper;
-    private final FileService fileService;
     private final JwtUtils jwtUtils;
 
-    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, FileService fileService, JwtUtils jwtUtils) {
+    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mapper = mapper;
-        this.fileService = fileService;
         this.jwtUtils = jwtUtils;
     }
 
@@ -150,21 +149,26 @@ class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BWBusinessException("User is not existed")
         );
-        fileService.init();
-        fileService.save(file);
-        String urlLoadFile = baseUrl + "/api/Files/" + file.getOriginalFilename();
-        user.setAvatar(urlLoadFile);
+        String avatar = CustomRandom.generateRandomFilename();
+        FileUtil.saveFile(file, avatar);
+        user.setAvatar(avatar);
         return mapper.map(user, UserDTOWithToken.class);
     }
 
     @Override
-    public List<UserDTO> searchUsers(String query) {
-        List<User> users = userRepository.searchUsers(query);
-        List<UserDTO> userDTOS = users
-                .stream()
-                .map(model -> mapper.map(model, UserDTO.class))
-                .toList();
-        return userDTOS;
+    public List<UserDTO> searchUsers(String query, String type) {
+        if ("less".equals(type)) {
+            return userRepository.search10Users(query)
+                    .stream()
+                    .map(model -> mapper.map(model, UserDTO.class))
+                    .toList();
+        } else {
+            return userRepository.searchUsers(query)
+                    .stream()
+                    .map(model -> mapper.map(model, UserDTO.class))
+                    .toList();
+        }
+
     }
 
 

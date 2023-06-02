@@ -7,9 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-@CrossOrigin(origins = "*")
+import java.util.List;
+
 @RestController
-@RequestMapping("api/Files")
+@RequestMapping("api/files")
 
 public class FileRestResource {
     private final FileService fileService;
@@ -17,21 +18,24 @@ public class FileRestResource {
     public FileRestResource(FileService fileService) {
         this.fileService = fileService;
     }
-
-
+    
     @PostMapping(path = "/Upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> uploadFiles(@RequestPart("file") MultipartFile file) {
-        fileService.init();
-        fileService.save(file);
+    public Object uploadFile(@RequestPart("file") MultipartFile file) {
+        return new ResponseEntity<>(fileService.save(file), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/UploadFiles", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Object uploadFiles(@RequestPart("file") List<MultipartFile> files) {
+        fileService.saveMultiple(files);
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
-
     @GetMapping("/{filename}") // đọc file
-    public ResponseEntity<?> loadFile(@PathVariable("filename") String fileName) {
+    public Object loadFile(@PathVariable("filename") String fileName) {
         Resource resource = fileService.load(fileName);
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
     }
+
 }
