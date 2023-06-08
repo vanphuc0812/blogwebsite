@@ -6,6 +6,7 @@ import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.service.BlogService;
 import com.example.blogwebsite.common.util.ResponseUtil;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,14 @@ public class BlogRestResource {
     public Object getAllBlogs() {
         return ResponseUtil.get(
                 blogService.findAllDto(BlogDTO.class)
+                , HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/GetAllBlogsPageable")
+    public Object getAllBlogsPageable(Pageable page) {
+        return ResponseUtil.get(
+                blogService.findAllDto(page, BlogDTO.class)
                 , HttpStatus.OK
         );
     }
