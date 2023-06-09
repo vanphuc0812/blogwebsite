@@ -24,7 +24,7 @@ class FileServiceImp implements FileService {
 
     @Override
     public String save(MultipartFile file) {
-        return FileUtil.saveFile(file);
+        return FileUtil.saveFile(file, file.getOriginalFilename());
     }
 
     @Override
