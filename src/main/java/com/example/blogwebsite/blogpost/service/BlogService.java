@@ -34,6 +34,7 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
     <T> List<T> searchBlogs(String searchKeyWord, String type);
 
 
+    BlogDTO findBlogById(UUID id);
 }
 
 @Service
@@ -72,6 +73,11 @@ class BlogServiceImpl implements BlogService {
                     .map(blog -> mapper.map(blog, BlogDTO.class))
                     .toList();
         }
+    }
+
+    @Override
+    public BlogDTO findBlogById(UUID id) {
+        return mapper.map(blogRepository.findById(id), BlogDTO.class);
     }
 
     @Override

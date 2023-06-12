@@ -22,6 +22,14 @@ public class BlogRestResource {
         this.blogService = blogService;
     }
 
+    @GetMapping("/GetBlogById")
+    public Object getBlogById(@RequestParam UUID id) {
+        return ResponseUtil.get(
+                blogService.findBlogById(id)
+                , HttpStatus.OK
+        );
+    }
+
     @GetMapping("/GetAllBlogs")
     public Object getAllBlogs() {
         return ResponseUtil.get(
