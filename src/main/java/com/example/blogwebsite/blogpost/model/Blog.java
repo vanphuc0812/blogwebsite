@@ -1,5 +1,7 @@
 package com.example.blogwebsite.blogpost.model;
 
+import com.example.blogwebsite.comment.model.Comment;
+import com.example.blogwebsite.comment.model.CommentEntity;
 import com.example.blogwebsite.common.model.BaseEntity;
 import com.example.blogwebsite.user.model.User;
 import jakarta.persistence.*;
@@ -7,6 +9,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,6 +38,9 @@ public class Blog extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = BlogEntity.BlogPostMappedToUser.JOIN_TABLE_USER_ID)
     )
     private User user;
+
+    @OneToMany(mappedBy = CommentEntity.BlogPostMappedToComment.BLOG_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Comment> comments = new ArrayList<>();
 
     public void setUser(User user) {
         this.user = user;

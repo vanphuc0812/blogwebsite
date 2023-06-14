@@ -2,6 +2,8 @@ package com.example.blogwebsite.user.model;
 
 import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.blogpost.model.BlogEntity;
+import com.example.blogwebsite.comment.model.Comment;
+import com.example.blogwebsite.comment.model.CommentEntity;
 import com.example.blogwebsite.common.model.BaseEntity;
 import com.example.blogwebsite.role.model.RoleEntity;
 import com.example.blogwebsite.role.model.UserGroup;
@@ -72,6 +74,9 @@ public class User extends BaseEntity {
     @ElementCollection
     @Column(name = UserEntity.User.FOLLOWED)
     private List<String> followed = new ArrayList<>();
+
+    @OneToMany(mappedBy = CommentEntity.UserMappedToComment.USER_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Comment> comments = new ArrayList<>();
 
     public enum Gender {
         MALE,
