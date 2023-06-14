@@ -14,6 +14,10 @@ public class UserEntity {
         public static final String EMAIL = "EMAIL";
         public static final String GENDER = "GENDER";
         public static final String AVATAR = "AVATAR";
+        public static final String FOLLOWING = "FOLLOWING";
+
+        public static final String FOLLOWED = "FOLLOWED";
+
     }
 
 }

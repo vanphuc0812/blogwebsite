@@ -43,6 +43,12 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
     List<UserDTO> searchUsers(String query, String type);
 
     List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs);
+
+    UserDTO followUser(String rootUsername, String followedUsername);
+
+    UserDTO unfollowUser(String rootUsername, String followedUsername);
+
+
 }
 
 @Service
@@ -131,6 +137,40 @@ class UserServiceImpl implements UserService {
                     UserDTOWithToken.class
             );
         }).toList();
+    }
+
+    @Override
+    public UserDTO followUser(String rootUsername, String followedUsername) {
+        User rootUser = userRepository.findByUsername(rootUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        User followedUser = userRepository.findByUsername(followedUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("Followed User is not existed.")
+                );
+        rootUser.getFollowing().add(followedUsername);
+        followedUser.getFollowed().add(rootUsername);
+
+        return mapper.map(rootUser, UserDTO.class);
+
+    }
+
+    @Override
+    public UserDTO unfollowUser(String rootUsername, String unfollowedUsername) {
+        User rootUser = userRepository.findByUsername(rootUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        User followedUser = userRepository.findByUsername(unfollowedUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("Followed User is not existed.")
+                );
+        rootUser.getFollowing().remove(unfollowedUsername);
+        followedUser.getFollowed().remove(rootUsername);
+
+        return mapper.map(rootUser, UserDTO.class);
+
     }
 
     @Override

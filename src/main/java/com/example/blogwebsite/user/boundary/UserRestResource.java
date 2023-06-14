@@ -48,7 +48,6 @@ public class UserRestResource {
         return ResponseUtil.get(userService.searchUsers(keyword, type), HttpStatus.OK);
     }
 
-
     @GetMapping("/GetAllUserGroupByUsername")
     public Object findAllUserGroupUsername(@RequestParam("username") String username) {
         return ResponseUtil.get(
@@ -56,7 +55,6 @@ public class UserRestResource {
                 , HttpStatus.OK
         );
     }
-
 
     @PostMapping("/SaveUser")
     public Object saveUser(@RequestBody @Valid UserDTO userDTO) {
@@ -89,6 +87,15 @@ public class UserRestResource {
         return ResponseUtil.get(userService.update(user), HttpStatus.OK);
     }
 
+    @PutMapping("/FollowUser")
+    public Object followUser(@RequestParam("rootUser") String rootUsername, @RequestParam("followedUser") String followedUsername) {
+        return ResponseUtil.get(userService.followUser(rootUsername, followedUsername), HttpStatus.OK);
+    }
+
+    @PutMapping("/UnfollowUser")
+    public Object unfollowUser(@RequestParam("rootUser") String rootUsername, @RequestParam("unfollowedUser") String unfollowedUsername) {
+        return ResponseUtil.get(userService.unfollowUser(rootUsername, unfollowedUsername), HttpStatus.OK);
+    }
 
     @DeleteMapping("/DeleteUser")
     public Object delete(@RequestParam("username") String username) {

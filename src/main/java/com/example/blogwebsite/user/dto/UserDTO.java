@@ -1,5 +1,6 @@
 package com.example.blogwebsite.user.dto;
 
+import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.user.validation.annotation.CorrectGender;
 import com.example.blogwebsite.user.validation.annotation.UniqueEmail;
 import com.example.blogwebsite.user.validation.annotation.UniqueUsername;
@@ -7,7 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -27,7 +28,10 @@ public class UserDTO {
     @UniqueEmail(message = "{user.email.existed}")
     private String email;
     private String avatar;
-
     @CorrectGender(message = "{user.gender.incorrect}")
     private String gender;
+    private List<String> following = new ArrayList<>();
+    private List<String> followed = new ArrayList<>();
+    private Set<Blog> blogs = new LinkedHashSet<>();
+
 }

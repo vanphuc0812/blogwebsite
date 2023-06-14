@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -63,6 +65,13 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = BlogEntity.BlogPostMappedToUser.BLOG_MAPPED_USER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Blog> blogs = new LinkedHashSet<>();
+
+    @ElementCollection
+    @Column(name = UserEntity.User.FOLLOWING)
+    private List<String> following = new ArrayList<>();
+    @ElementCollection
+    @Column(name = UserEntity.User.FOLLOWED)
+    private List<String> followed = new ArrayList<>();
 
     public enum Gender {
         MALE,
