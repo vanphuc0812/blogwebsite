@@ -24,8 +24,10 @@ public class Blog extends BaseEntity {
     private String shortContent;
     @Column(name = BlogEntity.BlogPost.TRANSLITERATE)
     private String transliterated;
-
-
+    @Column(name = BlogEntity.BlogPost.VIEWS)
+    private int views;
+    @Column(name = BlogEntity.BlogPost.LIKE)
+    private int like;
     @ManyToOne
     @JoinTable(
             name = BlogEntity.BlogPostMappedToUser.JOIN_TABLE,

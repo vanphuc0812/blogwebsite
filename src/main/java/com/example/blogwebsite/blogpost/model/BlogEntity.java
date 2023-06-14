@@ -20,5 +20,9 @@ public class BlogEntity {
         public static final String CONTENT = "CONTENT";
         public static final String CONTENT_SHORT = "CONTENT_SHORT";
         public static final String TRANSLITERATE = "TRANSLITERATE";
+        public static final String VIEWS = "VIEWS";
+        public static final String LIKE = "LIKE";
+
+
     }
 }

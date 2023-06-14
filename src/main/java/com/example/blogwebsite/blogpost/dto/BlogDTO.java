@@ -26,4 +26,6 @@ public class BlogDTO {
     private String transliterated;
     private String createdAt;
     private UserDTOSimple user;
+    private int views;
+
 }
