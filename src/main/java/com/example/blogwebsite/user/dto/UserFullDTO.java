@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserFullDTO {
     private UUID id;
     private String name;
     @Size(min = 5, max = 100, message = "{user.username.size}")
@@ -29,4 +30,7 @@ public class UserDTO {
     private String avatar;
     @CorrectGender(message = "{user.gender.incorrect}")
     private String gender;
+    private List<String> following;
+    private List<String> followed;
+//    private Set<BlogDTO> blogs;
 }

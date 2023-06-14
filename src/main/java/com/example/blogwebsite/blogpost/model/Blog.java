@@ -26,16 +26,12 @@ public class Blog extends BaseEntity {
     private String transliterated;
     @Column(name = BlogEntity.BlogPost.VIEWS)
     private int views;
-    @Column(name = BlogEntity.BlogPost.LIKE)
-    private int like;
     @ManyToOne
     @JoinTable(
             name = BlogEntity.BlogPostMappedToUser.JOIN_TABLE,
             joinColumns = @JoinColumn(name = BlogEntity.BlogPostMappedToUser.JOIN_TABLE_BLOG_ID),
             inverseJoinColumns = @JoinColumn(name = BlogEntity.BlogPostMappedToUser.JOIN_TABLE_USER_ID)
     )
-
-
     private User user;
 
     public void setUser(User user) {

@@ -1,5 +1,6 @@
 package com.example.blogwebsite.user.service;
 
+import com.example.blogwebsite.blogpost.dto.BlogDTO;
 import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
@@ -7,9 +8,7 @@ import com.example.blogwebsite.common.util.CustomRandom;
 import com.example.blogwebsite.common.util.FileUtil;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
 import com.example.blogwebsite.security.jwt.JwtUtils;
-import com.example.blogwebsite.user.dto.UserDTO;
-import com.example.blogwebsite.user.dto.UserDTOWithToken;
-import com.example.blogwebsite.user.dto.UserDtoWithoutPassword;
+import com.example.blogwebsite.user.dto.*;
 import com.example.blogwebsite.user.model.User;
 import com.example.blogwebsite.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -34,9 +33,10 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
 
     UserDTOWithToken createUser(UserDTO dto);
 
-    UserDTO getUserByUsername(String username);
+    UserFullDTO getUserByUsername(String username);
 
-    User findUserByUsername(String username);
+    UserDTOSimple getSimpleUserByUsername(String username);
+
 
     UserDTOWithToken saveUserAvatar(String username, MultipartFile file, String baseUrl);
 
@@ -49,6 +49,7 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
     UserDTO unfollowUser(String rootUsername, String followedUsername);
 
 
+    List<BlogDTO> getAllBlogsByUsername(String username);
 }
 
 @Service
@@ -112,6 +113,19 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<BlogDTO> getAllBlogsByUsername(String username) {
+        List<BlogDTO> blogDTOs = new ArrayList<>();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        user.getBlogs().forEach(
+                blog -> blogDTOs.add(mapper.map(blog, BlogDTO.class))
+        );
+        return blogDTOs;
+    }
+
+    @Override
     public UserDTOWithToken createUser(UserDTO dto) {
         User user = mapper.map(dto, User.class);
         // encode password
@@ -162,26 +176,25 @@ class UserServiceImpl implements UserService {
                 .orElseThrow(() ->
                         new BWBusinessException("User is not existed.")
                 );
-        User followedUser = userRepository.findByUsername(unfollowedUsername)
+        User unfollowedUser = userRepository.findByUsername(unfollowedUsername)
                 .orElseThrow(() ->
                         new BWBusinessException("Followed User is not existed.")
                 );
         rootUser.getFollowing().remove(unfollowedUsername);
-        followedUser.getFollowed().remove(rootUsername);
+        unfollowedUser.getFollowed().remove(rootUsername);
 
         return mapper.map(rootUser, UserDTO.class);
 
     }
 
     @Override
-    public UserDTO getUserByUsername(String username) {
-        return mapper.map(userRepository.findByUsername(username), UserDTO.class);
+    public UserFullDTO getUserByUsername(String username) {
+        return mapper.map(userRepository.findByUsername(username), UserFullDTO.class);
     }
 
     @Override
-    public User findUserByUsername(String username) {
-
-        return userRepository.findByUsername(username).orElseThrow(() -> new BWBusinessException("username is not existed"));
+    public UserDTOSimple getSimpleUserByUsername(String username) {
+        return mapper.map(userRepository.findByUsername(username), UserDTOSimple.class);
     }
 
     @Override

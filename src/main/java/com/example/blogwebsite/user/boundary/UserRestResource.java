@@ -42,10 +42,25 @@ public class UserRestResource {
         );
     }
 
+    @GetMapping("/GetSimpleUserByUsername")
+    public Object getSimpleUserByUsername(@RequestParam String username) {
+        return ResponseUtil.get(
+                userService.getSimpleUserByUsername(username)
+                , HttpStatus.OK
+        );
+    }
 
     @GetMapping("/SearchUsers")
     public Object searchUser(@RequestParam String keyword, @RequestParam String type) {
         return ResponseUtil.get(userService.searchUsers(keyword, type), HttpStatus.OK);
+    }
+
+    @GetMapping("/GetAllBlogsByUsername")
+    public Object getAllBlogsByUsername(@RequestParam("username") String username) {
+        return ResponseUtil.get(
+                userService.getAllBlogsByUsername(username)
+                , HttpStatus.OK
+        );
     }
 
     @GetMapping("/GetAllUserGroupByUsername")
