@@ -98,6 +98,7 @@ class BlogServiceImpl implements BlogService {
             blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
             blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
             blog.setUser(user);
+            blog.setViews(0);
             user.getBlogs().add(blog);
 
             return mapper.map(blogRepository.save(blog), BlogDTO.class);
@@ -115,6 +116,7 @@ class BlogServiceImpl implements BlogService {
         blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
         blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
         blog.setUser(user);
+        blog.setViews(0);
         user.getBlogs().add(blog);
         return mapper.map(blogRepository.save(blog), BlogDTO.class);
     }
