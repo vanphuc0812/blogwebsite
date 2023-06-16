@@ -1,6 +1,5 @@
 package com.example.blogwebsite.comment.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class CommentSaveDTO {
     private String content;
-    private int likes;
     private UUID blogID;
     private String username;
     private UUID parentID;
