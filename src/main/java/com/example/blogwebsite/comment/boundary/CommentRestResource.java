@@ -48,4 +48,10 @@ public class CommentRestResource {
                 , HttpStatus.OK
         );
     }
+
+    @DeleteMapping("/DeleteComment")
+    public Object deleteComment(@RequestParam UUID commentID) {
+        service.deleteComment(commentID);
+        return HttpStatus.OK;
+    }
 }

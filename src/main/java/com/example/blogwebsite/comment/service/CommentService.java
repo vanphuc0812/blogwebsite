@@ -28,6 +28,8 @@ public interface CommentService extends GenericService<Comment, CommentDTO, UUID
     List<CommentDTO> getChilrenCommentsByParentID(UUID parentID);
 
     CommentDTO saveComment(CommentSaveDTO commentSaveDTO);
+
+    void deleteComment(UUID commentID);
 }
 
 @Service
@@ -37,7 +39,7 @@ class CommentServiceImpl implements CommentService {
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
     private final BWMapper mapper;
-
+    private final String BLOG_NOT_EXIST = "Blog is not exist";
     CommentServiceImpl(CommentRepository commentRepository, BlogRepository blogRepository, UserRepository userRepository, BWMapper mapper) {
         this.commentRepository = commentRepository;
         this.blogRepository = blogRepository;
@@ -58,13 +60,14 @@ class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> getAllCommentsByBlogID(UUID blogId) {
-        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new BWBusinessException("Blog is not existed"));
+        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new BWBusinessException(BLOG_NOT_EXIST));
+
         return blog.getComments().stream().map(comment -> mapper.map(comment, CommentDTO.class)).toList();
     }
 
     @Override
     public List<CommentDTO> getNoParentCommentsByBlogID(UUID blogID) {
-        Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException("Blog is not existed"));
+        Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException(BLOG_NOT_EXIST));
         return blog.getComments().stream()
                 .filter(comment -> comment.getParent() == null)
                 .map(comment -> mapper.map(comment, CommentDTO.class)).toList();
@@ -78,21 +81,33 @@ class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDTO saveComment(CommentSaveDTO commentSaveDTO) {
-        Blog blog = blogRepository.findById(commentSaveDTO.getBlogID()).orElseThrow(() -> new BWBusinessException("Blog is not existed"));
+        Blog blog = blogRepository.findById(commentSaveDTO.getBlogID()).orElseThrow(() -> new BWBusinessException(BLOG_NOT_EXIST));
         User user = userRepository.findByUsername(commentSaveDTO.getUsername()).orElseThrow(() -> new BWBusinessException("User is not existed"));
 
         Comment comment = mapper.map(commentSaveDTO, Comment.class);
         comment.setUser(user);
         comment.setBlog(blog);
-        if (commentSaveDTO.getParentID() != null) {
+        if (commentSaveDTO.getParent() != null) {
 
-            Comment parentComment = commentRepository.findById(commentSaveDTO.getParentID()).orElseThrow(() -> new BWBusinessException("Parent comment is not existed"));
-            comment.setParent(parentComment);
+            Comment parentComment = commentRepository.findById(commentSaveDTO.getParent()).orElseThrow(() -> new BWBusinessException("Parent comment is not existed"));
+            comment.setParent(parentComment.getId());
 
         }
 
         blog.getComments().add(comment);
 
         return mapper.map(comment, CommentDTO.class);
+    }
+
+    @Override
+    public void deleteComment(UUID commentID) {
+        Comment comment = commentRepository.findById(commentID)
+                .orElseThrow(() ->
+                        new BWBusinessException("Comment is not existed.")
+                );
+        comment.getBlog().getComments().remove(comment);
+
+        commentRepository.findByParent(commentID).forEach(children -> commentRepository.deleteById(children.getId()));
+        commentRepository.deleteById(commentID);
     }
 }

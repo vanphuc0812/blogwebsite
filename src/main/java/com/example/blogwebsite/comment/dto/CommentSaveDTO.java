@@ -15,5 +15,5 @@ public class CommentSaveDTO {
     private String content;
     private UUID blogID;
     private String username;
-    private UUID parentID;
+    private UUID parent;
 }

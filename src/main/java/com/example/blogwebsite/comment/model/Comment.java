@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,11 +40,5 @@ public class Comment extends BaseEntity {
     )
     private User user;
 
-    private Comment parent;
-
-    @OneToOne
-    @JoinColumn(name = "id")
-    public Comment getParent() {
-        return parent;
-    }
+    private UUID parent;
 }
