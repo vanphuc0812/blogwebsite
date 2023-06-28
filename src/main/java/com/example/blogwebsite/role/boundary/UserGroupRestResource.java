@@ -4,6 +4,7 @@ import com.example.blogwebsite.common.util.ResponseUtil;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
 import com.example.blogwebsite.role.model.UserGroup;
 import com.example.blogwebsite.role.service.UserGroupService;
+import com.example.blogwebsite.security.authorization.PlogOperation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class UserGroupRestResource {
         this.service = service;
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @GetMapping("/GetAllUserGroups")
     public ResponseEntity<?> findAllUserGroup() {
         return ResponseUtil.get(
@@ -32,7 +33,7 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @GetMapping("/GetAllUserGroupIncludeUsers")
     public ResponseEntity<?> findAllUserGroupIncludedUsers() {
         return ResponseUtil.get(
@@ -41,7 +42,7 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @GetMapping("/GetUserGroupByName")
     public ResponseEntity<?> findUserGroupByName(@RequestParam("name") String name) {
         return ResponseUtil.get(
@@ -50,13 +51,13 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @GetMapping("/common/Search")
     public Object searchUserGroup(@RequestParam("query") String query) {
         return ResponseUtil.get(service.searchUserGroups(query), HttpStatus.OK);
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @PostMapping("/SaveUserGroup")
     public ResponseEntity<?> saveUserGroup(@RequestBody @Valid UserGroupDTO userGroupDto) {
         return ResponseUtil.get(
@@ -65,7 +66,7 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @PostMapping("{user-group-id}/AddUsers")
     public ResponseEntity<?> addUsers(
             @PathVariable("user-group-id") UUID userGroupId,
@@ -76,7 +77,7 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @PostMapping("{user-group-id}/RemoveUsers")
     public ResponseEntity<?> removeUsers(
             @PathVariable("user-group-id") UUID userGroupId,
@@ -87,13 +88,13 @@ public class UserGroupRestResource {
         );
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @PutMapping("/UpdateUserGroup")
     public Object update(@RequestBody @Valid UserGroupDTO userGroupDTO) {
         return ResponseUtil.get(service.update(userGroupDTO), HttpStatus.OK);
     }
 
-
+    @PlogOperation(name = "RoleManagement")
     @DeleteMapping("/DeleteUserGroup")
     public Object delete(@RequestParam("name") String name) {
         service.deleteByName(name);

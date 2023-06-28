@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface TCHOperation {
+public @interface PlogOperation {
     String name() default "";
 
     Operation.Type type() default Operation.Type.FETCH;
