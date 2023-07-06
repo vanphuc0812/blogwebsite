@@ -2,13 +2,13 @@ package com.example.blogwebsite.blogpost.validation.validator;
 
 import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.blogpost.repository.BlogRepository;
-import com.example.blogwebsite.user.validation.annotation.UniqueUsername;
+import com.example.blogwebsite.blogpost.validation.annotation.UniqueTitle;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Optional;
 
-public class UniqueTitleValidator implements ConstraintValidator<UniqueUsername, String> {
+public class UniqueTitleValidator implements ConstraintValidator<UniqueTitle, String> {
 
     private final BlogRepository repository;
     private String message;
@@ -18,7 +18,7 @@ public class UniqueTitleValidator implements ConstraintValidator<UniqueUsername,
     }
 
     @Override
-    public void initialize(UniqueUsername constraintAnnotation) {
+    public void initialize(UniqueTitle constraintAnnotation) {
         message = constraintAnnotation.message();
     }
 

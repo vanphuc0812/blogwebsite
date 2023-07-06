@@ -7,20 +7,17 @@ public class UserEntity {
     @UtilityClass
     public class User {
 
-        public static final String TABLE_NAME = "TCH_USER";
-        public static final String NAME = "TCH_NAME";
-        public static final String USERNAME = "TCH_USERNAME";
-        public static final String PASSWORD = "TCH_PASSWORD";
-        public static final String EMAIL = "TCH_EMAIL";
-        public static final String PHONE = "TCH_PHONE";
-        public static final String ADDRESS = "TCH_ADDRESS";
-        public static final String GENDER = "TCH_GENDER";
-        public static final String AVATAR = "TCH_AVATAR";
-        public static final String BIRTH = "TCH_BIRTH";
+        public static final String TABLE_NAME = "BLOGGER";
+        public static final String NAME = "NAME";
+        public static final String USERNAME = "USERNAME";
+        public static final String PASSWORD = "PASSWORD";
+        public static final String EMAIL = "EMAIL";
+        public static final String GENDER = "GENDER";
+        public static final String AVATAR = "AVATAR";
+        public static final String FOLLOWING = "FOLLOWING";
+
+        public static final String FOLLOWED = "FOLLOWED";
+
     }
 
-    @UtilityClass
-    public class UserMapped {
-        public static final String USER_MAPPED_ORDER = "user";
-    }
 }

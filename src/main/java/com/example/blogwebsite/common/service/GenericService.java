@@ -3,6 +3,8 @@ package com.example.blogwebsite.common.service;
 
 import com.example.blogwebsite.common.model.BaseEntity;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -30,10 +32,13 @@ public interface GenericService<T extends BaseEntity, D, I> {
     }
 
 
-    default List<D> findAllDto(Pageable page, Class<D> clazz) {
-        return getRepository().findAll(page).stream()
+    default Page<List<D>> findAllDto(Pageable page, Class<D> clazz) {
+
+        Page<T> modelPage = getRepository().findAll(page);
+        List<D> dtoList = modelPage.stream()
                 .map(model -> getMapper().map(model, clazz))
                 .toList();
+        return (Page<List<D>>) new PageImpl<>(dtoList, page, modelPage.getTotalElements());
     }
 
 

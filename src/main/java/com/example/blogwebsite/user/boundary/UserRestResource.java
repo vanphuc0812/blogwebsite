@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-@CrossOrigin(origins = "*")
+import java.util.List;
+
 @RestController
 @RequestMapping("/UsersManagement")
 
@@ -41,12 +42,26 @@ public class UserRestResource {
         );
     }
 
-
-    @GetMapping("/common/Search")
-    public Object searchUser(@RequestParam("query") String query) {
-        return ResponseUtil.get(userService.searchUsers(query), HttpStatus.OK);
+    @GetMapping("/GetSimpleUserByUsername")
+    public Object getSimpleUserByUsername(@RequestParam String username) {
+        return ResponseUtil.get(
+                userService.getSimpleUserByUsername(username)
+                , HttpStatus.OK
+        );
     }
 
+    @GetMapping("/SearchUsers")
+    public Object searchUser(@RequestParam String keyword, @RequestParam String type) {
+        return ResponseUtil.get(userService.searchUsers(keyword, type), HttpStatus.OK);
+    }
+
+    @GetMapping("/GetAllBlogsByUsername")
+    public Object getAllBlogsByUsername(@RequestParam("username") String username) {
+        return ResponseUtil.get(
+                userService.getAllBlogsByUsername(username)
+                , HttpStatus.OK
+        );
+    }
 
     @GetMapping("/GetAllUserGroupByUsername")
     public Object findAllUserGroupUsername(@RequestParam("username") String username) {
@@ -56,7 +71,6 @@ public class UserRestResource {
         );
     }
 
-
     @PostMapping("/SaveUser")
     public Object saveUser(@RequestBody @Valid UserDTO userDTO) {
         return ResponseUtil.get(
@@ -65,6 +79,13 @@ public class UserRestResource {
         );
     }
 
+    @PostMapping("/SaveUsers")
+    public Object saveUsers(@RequestBody @Valid List<UserDTO> userDTOs) {
+        return ResponseUtil.get(
+                userService.createUsers(userDTOs)
+                , HttpStatus.OK
+        );
+    }
 
     @PostMapping(path = "/saveUserAvatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Object saveUserAvatar(@RequestParam("username") String username, @RequestPart("avatar") MultipartFile avatar, HttpServletRequest request) {
@@ -81,6 +102,15 @@ public class UserRestResource {
         return ResponseUtil.get(userService.update(user), HttpStatus.OK);
     }
 
+    @PutMapping("/FollowUser")
+    public Object followUser(@RequestParam("rootUser") String rootUsername, @RequestParam("followedUser") String followedUsername) {
+        return ResponseUtil.get(userService.followUser(rootUsername, followedUsername), HttpStatus.OK);
+    }
+
+    @PutMapping("/UnfollowUser")
+    public Object unfollowUser(@RequestParam("rootUser") String rootUsername, @RequestParam("unfollowedUser") String unfollowedUsername) {
+        return ResponseUtil.get(userService.unfollowUser(rootUsername, unfollowedUsername), HttpStatus.OK);
+    }
 
     @DeleteMapping("/DeleteUser")
     public Object delete(@RequestParam("username") String username) {

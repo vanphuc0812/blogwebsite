@@ -1,13 +1,14 @@
 package com.example.blogwebsite.user.service;
 
+import com.example.blogwebsite.blogpost.dto.BlogDTO;
 import com.example.blogwebsite.common.exception.BWBusinessException;
 import com.example.blogwebsite.common.service.GenericService;
 import com.example.blogwebsite.common.util.BWMapper;
-import com.example.blogwebsite.file.FileService;
+import com.example.blogwebsite.common.util.CustomRandom;
+import com.example.blogwebsite.common.util.FileUtil;
 import com.example.blogwebsite.role.dto.UserGroupDTO;
-import com.example.blogwebsite.user.dto.UserDTO;
-import com.example.blogwebsite.user.dto.UserDTOWithToken;
-import com.example.blogwebsite.user.dto.UserDtoWithoutPassword;
+import com.example.blogwebsite.security.jwt.JwtUtils;
+import com.example.blogwebsite.user.dto.*;
 import com.example.blogwebsite.user.model.User;
 import com.example.blogwebsite.user.repository.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -32,13 +33,23 @@ public interface UserService extends GenericService<User, UserDTO, UUID> {
 
     UserDTOWithToken createUser(UserDTO dto);
 
-    UserDTO getUserByUsername(String username);
+    UserFullDTO getUserByUsername(String username);
 
-    User findUserByUsername(String username);
+    UserDTOSimple getSimpleUserByUsername(String username);
+
 
     UserDTOWithToken saveUserAvatar(String username, MultipartFile file, String baseUrl);
 
-    List<UserDTO> searchUsers(String query);
+    List<UserDTO> searchUsers(String query, String type);
+
+    List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs);
+
+    UserDTO followUser(String rootUsername, String followedUsername);
+
+    UserDTO unfollowUser(String rootUsername, String followedUsername);
+
+
+    List<BlogDTO> getAllBlogsByUsername(String username);
 }
 
 @Service
@@ -47,13 +58,13 @@ class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final BWMapper mapper;
-    private final FileService fileService;
+    private final JwtUtils jwtUtils;
 
-    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, FileService fileService) {
+    UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository, BWMapper mapper, JwtUtils jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.mapper = mapper;
-        this.fileService = fileService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -82,10 +93,7 @@ class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new BWBusinessException("User not found"));
         user.setName(userDTO.getName());
         user.setUsername(userDTO.getUsername());
-        user.setBirth(userDTO.getBirth());
         user.setAvatar(userDTO.getAvatar());
-        user.setPhone(userDTO.getPhone());
-        user.setAddress(userDTO.getAddress());
         user.setGender(User.Gender.valueOf(userDTO.getGender()));
         return mapper.map(user, UserDtoWithoutPassword.class);
     }
@@ -105,6 +113,19 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<BlogDTO> getAllBlogsByUsername(String username) {
+        List<BlogDTO> blogDTOs = new ArrayList<>();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        user.getBlogs().forEach(
+                blog -> blogDTOs.add(mapper.map(blog, BlogDTO.class))
+        );
+        return blogDTOs;
+    }
+
+    @Override
     public UserDTOWithToken createUser(UserDTO dto) {
         User user = mapper.map(dto, User.class);
         // encode password
@@ -118,14 +139,62 @@ class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUserByUsername(String username) {
-        return mapper.map(userRepository.findByUsername(username), UserDTO.class);
+    public List<UserDTOWithToken> createUsers(List<UserDTO> userDTOs) {
+
+        return userDTOs.stream().map((userDTO) -> {
+            User user = mapper.map(userDTO, User.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setProvider(User.Provider.local);
+            user.setToken(jwtUtils.generateJwt(user.getUsername()));
+            return mapper.map(
+                    userRepository.save(user),
+                    UserDTOWithToken.class
+            );
+        }).toList();
     }
 
     @Override
-    public User findUserByUsername(String username) {
+    public UserDTO followUser(String rootUsername, String followedUsername) {
+        User rootUser = userRepository.findByUsername(rootUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        User followedUser = userRepository.findByUsername(followedUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("Followed User is not existed.")
+                );
+        rootUser.getFollowing().add(followedUsername);
+        followedUser.getFollowed().add(rootUsername);
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new BWBusinessException("username is not existed"));
+        return mapper.map(rootUser, UserDTO.class);
+
+    }
+
+    @Override
+    public UserDTO unfollowUser(String rootUsername, String unfollowedUsername) {
+        User rootUser = userRepository.findByUsername(rootUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("User is not existed.")
+                );
+        User unfollowedUser = userRepository.findByUsername(unfollowedUsername)
+                .orElseThrow(() ->
+                        new BWBusinessException("Followed User is not existed.")
+                );
+        rootUser.getFollowing().remove(unfollowedUsername);
+        unfollowedUser.getFollowed().remove(rootUsername);
+
+        return mapper.map(rootUser, UserDTO.class);
+
+    }
+
+    @Override
+    public UserFullDTO getUserByUsername(String username) {
+        return mapper.map(userRepository.findByUsername(username), UserFullDTO.class);
+    }
+
+    @Override
+    public UserDTOSimple getSimpleUserByUsername(String username) {
+        return mapper.map(userRepository.findByUsername(username), UserDTOSimple.class);
     }
 
     @Override
@@ -133,21 +202,27 @@ class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new BWBusinessException("User is not existed")
         );
-        fileService.init();
-        fileService.save(file);
-        String urlLoadFile = baseUrl + "/api/Files/" + file.getOriginalFilename();
-        user.setAvatar(urlLoadFile);
+        String avatar = CustomRandom.generateRandomFilename();
+        FileUtil.saveFile(file, avatar);
+        user.setAvatar(avatar);
         return mapper.map(user, UserDTOWithToken.class);
     }
 
     @Override
-    public List<UserDTO> searchUsers(String query) {
-        List<User> users = userRepository.searchUsers(query);
-        List<UserDTO> userDTOS = users
-                .stream()
-                .map(model -> mapper.map(model, UserDTO.class))
-                .toList();
-        return userDTOS;
+    public List<UserDTO> searchUsers(String query, String type) {
+        if ("less".equals(type)) {
+            return userRepository.search10Users(query)
+                    .stream()
+                    .map(model -> mapper.map(model, UserDTO.class))
+                    .toList();
+        } else {
+            return userRepository.searchUsers(query)
+                    .stream()
+                    .map(model -> mapper.map(model, UserDTO.class))
+                    .toList();
+        }
+
     }
+
 
 }

@@ -1,6 +1,8 @@
 package com.example.blogwebsite.blogpost.service;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogDTOWithoutContent;
+import com.example.blogwebsite.blogpost.dto.BlogSaveDTO;
 import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.model.Blog;
 import com.example.blogwebsite.blogpost.repository.BlogRepository;
@@ -21,11 +23,18 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
 
     List<BlogDTO> findBlogsByUsername(String username);
 
-    BlogDTO save(BlogDTO blogDTO);
+    BlogDTO save(BlogSaveDTO blogDTO);
+
+    List<BlogDTO> saveMultiple(List<BlogSaveDTO> blogDTOs);
 
     void deleteBlog(UUID blogID);
 
     BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO);
+
+    <T> List<T> searchBlogs(String searchKeyWord, String type);
+
+
+    BlogDTO findBlogById(UUID id);
 }
 
 @Service
@@ -52,6 +61,26 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public <T> List<T> searchBlogs(String searchKeyWord, String type) {
+        if ("less".equals(type)) {
+            return (List<T>) blogRepository.search10BlogPosts(searchKeyWord)
+                    .stream()
+                    .map(blog -> mapper.map(blog, BlogDTOWithoutContent.class))
+                    .toList();
+        } else {
+            return (List<T>) blogRepository.searchBlogPosts(searchKeyWord)
+                    .stream()
+                    .map(blog -> mapper.map(blog, BlogDTO.class))
+                    .toList();
+        }
+    }
+
+    @Override
+    public BlogDTO findBlogById(UUID id) {
+        return mapper.map(blogRepository.findById(id), BlogDTO.class);
+    }
+
+    @Override
     public List<BlogDTO> findBlogsByUsername(String username) {
         return blogRepository.searchBlogPostByUsername(username)
                 .stream()
@@ -60,20 +89,42 @@ class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public BlogDTO save(BlogDTO blogDTO) {
+    public List<BlogDTO> saveMultiple(List<BlogSaveDTO> blogDTOs) {
+        return blogDTOs.stream().map((blogDTO) -> {
+            User user = userRepository.findByUsername(blogDTO.getUsername()).orElseThrow(() ->
+                    new BWBusinessException("User is not existed")
+            );
+            Blog blog = mapper.map(blogDTO, Blog.class);
+            blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
+            blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
+            blog.setUser(user);
+            blog.setViews(0);
+            user.getBlogs().add(blog);
+
+            return mapper.map(blogRepository.save(blog), BlogDTO.class);
+        }).toList();
+
+    }
+
+    @Override
+    public BlogDTO save(BlogSaveDTO blogDTO) {
         User user = userRepository.findByUsername(blogDTO.getUsername()).orElseThrow(() ->
                 new BWBusinessException("User is not existed")
         );
 
         Blog blog = mapper.map(blogDTO, Blog.class);
+        blog.setTransliterated(blogDTO.getTitle().replaceAll(" ", "-"));
+        blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
         blog.setUser(user);
+        blog.setViews(0);
+        user.getBlogs().add(blog);
         return mapper.map(blogRepository.save(blog), BlogDTO.class);
     }
 
     @Override
     public void deleteBlog(UUID blogID) {
         Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException("Could not find blog"));
-        User user = blog.getUser();
+        User user = mapper.map(blog.getUser(), User.class);
         user.getBlogs().remove(blog);
         blogRepository.deleteById(blogID);
     }
@@ -81,8 +132,15 @@ class BlogServiceImpl implements BlogService {
     @Override
     public BlogUpdateDTO updateBlog(BlogUpdateDTO blogDTO) {
         Blog blog = blogRepository.findById(blogDTO.getId()).orElseThrow(() -> new BWBusinessException(""));
-        if (blogDTO.getTitle() != null) blog.setTitle(blogDTO.getTitle());
-        if (blogDTO.getContent() != null) blog.setContent(blogDTO.getContent());
+        if (blogDTO.getTitle() != null) {
+            blog.setTitle(blogDTO.getTitle());
+            blog.setTransliterated(blogDTO.getTitle().replace(" ", "-"));
+        }
+        if (blogDTO.getContent() != null) {
+            blog.setContent(blogDTO.getContent());
+            blog.setShortContent(blogDTO.getContent().substring(0, 400) + "...");
+        }
         return mapper.map(blog, BlogUpdateDTO.class);
     }
+
 }

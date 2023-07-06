@@ -23,6 +23,28 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT u FROM User u WHERE " + "u.username LIKE CONCAT ('%',:query,'%')")
+    @Query("""
+            SELECT u FROM User u
+            WHERE u.username LIKE CONCAT ('%',:query,'%') OR u.name LIKE CONCAT ('%',:query,'%')
+            ORDER BY
+                 CASE
+                   WHEN u.name ILIKE CONCAT('%', :query, '%') THEN 1
+                   ELSE 2
+                 END,
+                 u.name ASC
+            """)
     List<User> searchUsers(String query);
+
+    @Query("""
+            SELECT u FROM User u
+            WHERE u.username LIKE CONCAT ('%',:query,'%') OR u.name LIKE CONCAT ('%',:query,'%')
+            ORDER BY
+                 CASE
+                   WHEN u.name ILIKE CONCAT('%', :query, '%') THEN 1
+                   ELSE 2
+                 END,
+                 u.name ASC
+            LIMIT 10
+            """)
+    List<User> search10Users(String query);
 }

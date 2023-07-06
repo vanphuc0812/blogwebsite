@@ -31,6 +31,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC+7
+      dialect: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     properties:
       hibernate:
@@ -38,13 +43,13 @@ spring:
     show-sql: true
   flyway:
     enabled: false
-#  profiles:
-#    active: dev
-#  jackson:
-#    serialization:
-#      FAIL_ON_EMPTY_BEANS: false
-#
-#springdoc:
-#  swagger-ui:
-#    path: swagger-ui.html
-#    operationsSorter: method
+  profiles:
+    active: deploy
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+springdoc:
+  swagger-ui:
+    path: swagger-ui.html
+    operationsSorter: method

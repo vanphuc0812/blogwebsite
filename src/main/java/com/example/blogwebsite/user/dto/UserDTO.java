@@ -26,12 +26,7 @@ public class UserDTO {
     @NotBlank(message = "{user.email.blank}")
     @UniqueEmail(message = "{user.email.existed}")
     private String email;
-    private String birth;
     private String avatar;
-    @NotBlank(message = "{user.phone.blank}")
-    private String phone;
-    private String address;
-
     @CorrectGender(message = "{user.gender.incorrect}")
     private String gender;
 }

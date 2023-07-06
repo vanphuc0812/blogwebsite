@@ -16,7 +16,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -43,7 +42,7 @@ public class BaseEntity implements Serializable {
     @Column(name = Columns.CREATED_AT)
     @DateTimeFormat(pattern = DateTimeUtils.DATETIME_FORMAT)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateTimeUtils.DATETIME_FORMAT)
-    protected LocalDateTime createdAt; // thời gian tạo
+    protected String createdAt; // thời gian tạo
 
     @Column(name = Columns.LAST_MODIFIED_BY)
     @LastModifiedBy
@@ -53,7 +52,7 @@ public class BaseEntity implements Serializable {
     @DateTimeFormat(pattern = DateTimeUtils.DATETIME_FORMAT)
     @Column(name = Columns.LAST_MODIFIED_AT)
     @LastModifiedDate
-    protected LocalDateTime lastModifiedAt; // thời gian sửa cuối
+    protected String lastModifiedAt; // thời gian sửa cuối
 
     // inner class
     @UtilityClass // class ko có khởi tọa instance

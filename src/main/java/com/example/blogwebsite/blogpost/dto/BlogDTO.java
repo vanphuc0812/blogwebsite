@@ -1,6 +1,7 @@
 package com.example.blogwebsite.blogpost.dto;
 
 import com.example.blogwebsite.blogpost.validation.annotation.UniqueTitle;
+import com.example.blogwebsite.user.dto.UserDTOSimple;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -21,5 +22,10 @@ public class BlogDTO {
     @UniqueTitle(message = "{blog.title.existed}")
     private String title;
     private String content;
-    private String username;
+    private String shortContent;
+    private String transliterated;
+    private String createdAt;
+    private UserDTOSimple user;
+    private int views;
+
 }

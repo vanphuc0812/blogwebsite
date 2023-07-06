@@ -15,4 +15,5 @@ public class BlogUpdateDTO {
     private UUID id;
     private String title;
     private String content;
+    private String shortContent;
 }

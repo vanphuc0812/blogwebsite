@@ -11,8 +11,30 @@ import java.util.UUID;
 
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, UUID> {
-    @Query("SELECT p FROM Blog p WHERE " + "p.title LIKE CONCAT ('%',:query,'%')")
-    List<Blog> searchBlogPostByTitle(String query);
+    @Query("""
+               SELECT p FROM Blog p
+               WHERE p.title ILIKE CONCAT ('%',:query,'%') OR p.content ILIKE CONCAT ('%',:query,'%')
+               ORDER BY
+                 CASE
+                   WHEN p.title ILIKE CONCAT('%', :query, '%') THEN 1
+                   ELSE 2
+                 END,
+                 p.title ASC
+            """)
+    List<Blog> searchBlogPosts(String query);
+
+    @Query("""
+               SELECT p FROM Blog p
+               WHERE p.title ILIKE CONCAT ('%',:query,'%') OR p.content ILIKE CONCAT ('%',:query,'%')
+               ORDER BY
+                 CASE
+                   WHEN p.title ILIKE CONCAT('%', :query, '%') THEN 1
+                   ELSE 2
+                 END,
+                 p.title ASC
+               LIMIT 10
+            """)
+    List<Blog> search10BlogPosts(String query);
 
     @Query("SELECT p FROM Blog p WHERE p.user.username = :username")
     List<Blog> searchBlogPostByUsername(String username);

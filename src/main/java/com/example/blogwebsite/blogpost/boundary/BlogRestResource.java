@@ -1,13 +1,16 @@
 package com.example.blogwebsite.blogpost.boundary;
 
 import com.example.blogwebsite.blogpost.dto.BlogDTO;
+import com.example.blogwebsite.blogpost.dto.BlogSaveDTO;
 import com.example.blogwebsite.blogpost.dto.BlogUpdateDTO;
 import com.example.blogwebsite.blogpost.service.BlogService;
 import com.example.blogwebsite.common.util.ResponseUtil;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,10 +22,34 @@ public class BlogRestResource {
         this.blogService = blogService;
     }
 
+    @GetMapping("/GetBlogById")
+    public Object getBlogById(@RequestParam UUID id) {
+        return ResponseUtil.get(
+                blogService.findBlogById(id)
+                , HttpStatus.OK
+        );
+    }
+
     @GetMapping("/GetAllBlogs")
     public Object getAllBlogs() {
         return ResponseUtil.get(
                 blogService.findAllDto(BlogDTO.class)
+                , HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/GetAllBlogsPageable")
+    public Object getAllBlogsPageable(Pageable page) {
+        return ResponseUtil.get(
+                blogService.findAllDto(page, BlogDTO.class)
+                , HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/SearchBlogs")
+    public Object searchBlogs(@RequestParam String keyword, @RequestParam String type) {
+        return ResponseUtil.get(
+                blogService.searchBlogs(keyword, type)
                 , HttpStatus.OK
         );
     }
@@ -36,8 +63,13 @@ public class BlogRestResource {
     }
 
     @PostMapping("/SaveBlog")
-    public Object saveBlog(@RequestBody @Valid BlogDTO blogDTO) {
+    public Object saveBlog(@RequestBody @Valid BlogSaveDTO blogDTO) {
         return ResponseUtil.get(blogService.save(blogDTO), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/SaveBlogs")
+    public Object saveBlogs(@RequestBody @Valid List<BlogSaveDTO> blogDTOs) {
+        return ResponseUtil.get(blogService.saveMultiple(blogDTOs), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/DeleteBlog")
