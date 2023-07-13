@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 5000
   forward-headers-strategy: framework
 spring:
   security:
@@ -7,8 +7,8 @@ spring:
       client:
         registration:
           google:
-            clientId: 307631907025-nrsq4dog0i2bg8ll8n9akuposk8deplb.apps.googleusercontent.com
-            clientSecret: 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
+            clientId: 459707231919-ga493mkr3qj9a1lpaeli1f12pvdltv33.apps.googleusercontent.com
+            clientSecret: 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
             scope:
               - email
               - profile
@@ -45,8 +45,17 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 springdoc:
   swagger-ui:
     path: swagger-ui.html
     operationsSorter: method
+
+aws:
+  endpointUrl: https://s3.us-east-2.amazonaws.com
+  accessKey: AKIATSCFT4H254V5AKOQ
+  secretKey: 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
+  bucketName: plog-resource

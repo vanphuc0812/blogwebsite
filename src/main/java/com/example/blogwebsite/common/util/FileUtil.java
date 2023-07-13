@@ -20,7 +20,7 @@ public class FileUtil {
             } catch (Exception e) {
                 return SAVE_FILE_ERROR_MESSAGE + e.getMessage();
             }
-            return SAVE_FILE_SUCCESS_MESSAGE;
+            return SAVE_FILE_SUCCESS_MESSAGE + ": " + filename;
         } else {
             return ROOT_ERROR_MESSAGE;
         }
@@ -29,12 +29,14 @@ public class FileUtil {
 
     public static String saveFile(MultipartFile file) {
         if (init()) {
+            String filename = CustomRandom.generateRandomFilename();
             try {
-                Files.copy(file.getInputStream(), ROOTPATH.resolve(CustomRandom.generateRandomFilename()));
+                Files.copy(file.getInputStream(), ROOTPATH.resolve(filename));
             } catch (Exception e) {
                 return SAVE_FILE_ERROR_MESSAGE + e.getMessage();
             }
-            return SAVE_FILE_SUCCESS_MESSAGE;
+            return SAVE_FILE_SUCCESS_MESSAGE + ": " + filename;
+
         } else {
             return ROOT_ERROR_MESSAGE;
         }
