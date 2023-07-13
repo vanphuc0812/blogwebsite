@@ -75,8 +75,10 @@ public interface GenericService<T extends BaseEntity, D, I> {
         getRepository().deleteById(id);
     }
 
-    default T update(T entity) {
-        return getRepository().save(entity);
+    default D update(T dto, Class<T> modelClass, Class<D> dtoClass) {
+        T model = getMapper().map(dto, modelClass);
+        T savedModel = getRepository().save(model);
+        return getMapper().map(savedModel, dtoClass);
     }
 
 }
