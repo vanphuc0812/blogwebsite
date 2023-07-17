@@ -34,6 +34,7 @@ public class CommentEntity {
         public static final String CONTENT = "CONTENT";
 
         public static final String LIKES = "LIKES";
+        public static final String NUMBER_OF_LIKES = "NUMBER_OF_LIKES";
 
         public static final String OWNER = "OWNER";
         public static final String BLOG = "BLOG";

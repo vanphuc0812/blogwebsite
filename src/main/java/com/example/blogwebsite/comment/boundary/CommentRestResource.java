@@ -50,9 +50,9 @@ public class CommentRestResource {
     }
 
     @PostMapping("/LikeComment")
-    public Object like(@RequestParam UUID commentID, @RequestParam UUID userID) {
+    public Object like(@RequestParam UUID commentID, @RequestParam String username) {
         return ResponseUtil.get(
-                service.likeComment(commentID, userID)
+                service.likeComment(commentID, username)
                 , HttpStatus.OK
         );
     }

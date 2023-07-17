@@ -72,6 +72,14 @@ public class BlogRestResource {
         return ResponseUtil.get(blogService.saveMultiple(blogDTOs), HttpStatus.CREATED);
     }
 
+    @PostMapping("/LikeBlog")
+    public Object like(@RequestParam UUID commentID, @RequestParam String username) {
+        return ResponseUtil.get(
+                blogService.likeBlog(commentID, username)
+                , HttpStatus.OK
+        );
+    }
+
     @DeleteMapping("/DeleteBlog")
     public Object deleteBlog(@RequestParam UUID blogID) {
         blogService.deleteBlog(blogID);

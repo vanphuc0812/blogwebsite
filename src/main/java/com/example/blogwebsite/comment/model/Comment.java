@@ -46,6 +46,7 @@ public class Comment extends BaseEntity {
             joinColumns = @JoinColumn(name = CommentEntity.UserLikeToComment.JOIN_TABLE_USER_ID),
             inverseJoinColumns = @JoinColumn(name = CommentEntity.UserLikeToComment.JOIN_TABLE_COMMENT_ID))
     private Set<User> likes = new LinkedHashSet<>();
+    @Column(name = CommentEntity.Comment.NUMBER_OF_LIKES)
     private int numberOfLikes;
     private UUID parent;
 }

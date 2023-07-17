@@ -79,6 +79,9 @@ public class User extends BaseEntity {
     @ManyToMany(mappedBy = CommentEntity.UserLikeToComment.USER_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Comment> likedComments = new LinkedHashSet<>();
 
+    @ManyToMany(mappedBy = BlogEntity.UserLikeToBlogPost.USER_MAPPED_BLOGPOST, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Blog> likedBlogs = new LinkedHashSet<>();
+
     public enum Gender {
         MALE,
         FEMALE,

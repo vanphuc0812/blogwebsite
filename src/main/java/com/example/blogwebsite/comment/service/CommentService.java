@@ -33,7 +33,7 @@ public interface CommentService extends GenericService<Comment, CommentDTO, UUID
 
     void deleteComment(UUID commentID);
 
-    CommentDTO likeComment(UUID commentID, UUID userID);
+    CommentDTO likeComment(UUID commentID, String username);
 
 //    void updateComment(CommentUpdateDTO comment);
 }
@@ -132,10 +132,10 @@ class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentDTO likeComment(UUID commentID, UUID userID) {
+    public CommentDTO likeComment(UUID commentID, String username) {
         Comment comment = commentRepository.findById(commentID)
                 .orElseThrow(() -> new BWBusinessException("Comment is not existed."));
-        User user = userRepository.findById(userID)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BWBusinessException("User is not exist."));
         if (comment.getLikes().contains(user)) {
             user.getLikedComments().remove(comment);

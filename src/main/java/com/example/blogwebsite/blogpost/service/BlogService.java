@@ -35,6 +35,9 @@ public interface BlogService extends GenericService<Blog, BlogDTO, UUID> {
 
 
     BlogDTO findBlogById(UUID id);
+
+    BlogDTO likeBlog(UUID blogID, String username);
+
 }
 
 @Service
@@ -143,4 +146,20 @@ class BlogServiceImpl implements BlogService {
         return mapper.map(blog, BlogUpdateDTO.class);
     }
 
+    @Override
+    public BlogDTO likeBlog(UUID blogID, String username) {
+        Blog blog = blogRepository.findById(blogID)
+                .orElseThrow(() -> new BWBusinessException("Blog is not existed."));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BWBusinessException("User is not exist."));
+        if (blog.getLikes().contains(user)) {
+            user.getLikedBlogs().remove(blog);
+            blog.getLikes().remove(user);
+        } else {
+            user.getLikedBlogs().add(blog);
+            blog.getLikes().add(user);
+        }
+        blog.setNumberOfLikes(blog.getLikes().size());
+        return mapper.map(blog, BlogDTO.class);
+    }
 }

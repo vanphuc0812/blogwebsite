@@ -11,7 +11,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -41,6 +43,15 @@ public class Blog extends BaseEntity {
 
     @OneToMany(mappedBy = CommentEntity.BlogPostMappedToComment.BLOG_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = BlogEntity.BlogPost.LIKES)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = BlogEntity.UserLikeToBlogPost.JOIN_TABLE,
+            joinColumns = @JoinColumn(name = BlogEntity.UserLikeToBlogPost.JOIN_TABLE_USER_ID),
+            inverseJoinColumns = @JoinColumn(name = BlogEntity.UserLikeToBlogPost.JOIN_TABLE_BLOG_ID))
+    private Set<User> likes = new LinkedHashSet<>();
+    @Column(name = CommentEntity.Comment.NUMBER_OF_LIKES)
+    private int numberOfLikes;
 
     public void setUser(User user) {
         this.user = user;

@@ -27,5 +27,6 @@ public class BlogDTO {
     private String createdAt;
     private UserDTOSimple user;
     private int views;
+    private int numberOfLikes;
 
 }
