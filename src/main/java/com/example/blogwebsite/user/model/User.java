@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -70,13 +68,16 @@ public class User extends BaseEntity {
 
     @ElementCollection
     @Column(name = UserEntity.User.FOLLOWING)
-    private List<String> following = new ArrayList<>();
+    private Set<String> following = new LinkedHashSet<>();
     @ElementCollection
     @Column(name = UserEntity.User.FOLLOWED)
-    private List<String> followed = new ArrayList<>();
+    private Set<String> followed = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = CommentEntity.UserMappedToComment.USER_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Comment> comments = new ArrayList<>();
+    private Set<Comment> comments = new LinkedHashSet<>();
+
+    @ManyToMany(mappedBy = CommentEntity.UserLikeToComment.USER_MAPPED_COMMENT, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<Comment> likedComments = new LinkedHashSet<>();
 
     public enum Gender {
         MALE,

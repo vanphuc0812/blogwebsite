@@ -17,6 +17,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,10 @@ public interface CommentService extends GenericService<Comment, CommentDTO, UUID
     CommentDTO saveComment(CommentSaveDTO commentSaveDTO);
 
     void deleteComment(UUID commentID);
+
+    CommentDTO likeComment(UUID commentID, UUID userID);
+
+//    void updateComment(CommentUpdateDTO comment);
 }
 
 @Service
@@ -40,6 +46,7 @@ class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
     private final BWMapper mapper;
     private final String BLOG_NOT_EXIST = "Blog is not exist";
+
     CommentServiceImpl(CommentRepository commentRepository, BlogRepository blogRepository, UserRepository userRepository, BWMapper mapper) {
         this.commentRepository = commentRepository;
         this.blogRepository = blogRepository;
@@ -70,13 +77,26 @@ class CommentServiceImpl implements CommentService {
         Blog blog = blogRepository.findById(blogID).orElseThrow(() -> new BWBusinessException(BLOG_NOT_EXIST));
         return blog.getComments().stream()
                 .filter(comment -> comment.getParent() == null)
+                .sorted(((o1, o2) -> {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd/MM/yyyy");
+                    LocalDateTime dateTime1 = LocalDateTime.parse(o1.getCreatedAt(), formatter);
+                    LocalDateTime dateTime2 = LocalDateTime.parse(o2.getCreatedAt(), formatter);
+                    return dateTime1.compareTo(dateTime2);
+                }))
                 .map(comment -> mapper.map(comment, CommentDTO.class)).toList();
     }
 
     @Override
     public List<CommentDTO> getChilrenCommentsByParentID(UUID parentID) {
         return commentRepository.findByParent(parentID)
-                .stream().map((comment) -> mapper.map(comment, CommentDTO.class)).toList();
+                .stream()
+                .sorted(((o1, o2) -> {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd/MM/yyyy");
+                    LocalDateTime dateTime1 = LocalDateTime.parse(o1.getCreatedAt(), formatter);
+                    LocalDateTime dateTime2 = LocalDateTime.parse(o2.getCreatedAt(), formatter);
+                    return dateTime1.compareTo(dateTime2);
+                })).map(comment -> mapper.map(comment, CommentDTO.class))
+                .toList();
     }
 
     @Override
@@ -109,5 +129,22 @@ class CommentServiceImpl implements CommentService {
 
         commentRepository.findByParent(commentID).forEach(children -> commentRepository.deleteById(children.getId()));
         commentRepository.deleteById(commentID);
+    }
+
+    @Override
+    public CommentDTO likeComment(UUID commentID, UUID userID) {
+        Comment comment = commentRepository.findById(commentID)
+                .orElseThrow(() -> new BWBusinessException("Comment is not existed."));
+        User user = userRepository.findById(userID)
+                .orElseThrow(() -> new BWBusinessException("User is not exist."));
+        if (comment.getLikes().contains(user)) {
+            user.getLikedComments().remove(comment);
+            comment.getLikes().remove(user);
+        } else {
+            user.getLikedComments().add(comment);
+            comment.getLikes().add(user);
+        }
+        comment.setNumberOfLikes(comment.getLikes().size());
+        return mapper.map(comment, CommentDTO.class);
     }
 }

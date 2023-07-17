@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -21,8 +23,6 @@ public class Comment extends BaseEntity {
     @Column(name = CommentEntity.Comment.CONTENT, length = 1000)
     private String content;
 
-    @Column(name = CommentEntity.Comment.LIKES)
-    private int likes;
 
     @ManyToOne
     @JoinTable(
@@ -35,10 +35,17 @@ public class Comment extends BaseEntity {
     @ManyToOne
     @JoinTable(
             name = CommentEntity.UserMappedToComment.JOIN_TABLE,
-            joinColumns = @JoinColumn(name = CommentEntity.UserMappedToComment.JOIN_TABLE_BLOG_ID),
+            joinColumns = @JoinColumn(name = CommentEntity.UserMappedToComment.JOIN_TABLE_USER_ID),
             inverseJoinColumns = @JoinColumn(name = CommentEntity.UserMappedToComment.JOIN_TABLE_COMMENT_ID)
     )
     private User user;
 
+    @Column(name = CommentEntity.Comment.LIKES)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = CommentEntity.UserLikeToComment.JOIN_TABLE,
+            joinColumns = @JoinColumn(name = CommentEntity.UserLikeToComment.JOIN_TABLE_USER_ID),
+            inverseJoinColumns = @JoinColumn(name = CommentEntity.UserLikeToComment.JOIN_TABLE_COMMENT_ID))
+    private Set<User> likes = new LinkedHashSet<>();
+    private int numberOfLikes;
     private UUID parent;
 }

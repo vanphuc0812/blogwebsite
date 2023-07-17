@@ -16,7 +16,15 @@ public class CommentEntity {
     public static class UserMappedToComment {
         public static final String USER_MAPPED_COMMENT = "user";
         public static final String JOIN_TABLE = "USER_COMMENT";
-        public static final String JOIN_TABLE_BLOG_ID = "USER_ID";
+        public static final String JOIN_TABLE_USER_ID = "USER_ID";
+        public static final String JOIN_TABLE_COMMENT_ID = "COMMENT_ID";
+    }
+
+    @UtilityClass
+    public static class UserLikeToComment {
+        public static final String USER_MAPPED_COMMENT = "likes";
+        public static final String JOIN_TABLE = "USER_LIKE_COMMENT";
+        public static final String JOIN_TABLE_USER_ID = "USER_ID";
         public static final String JOIN_TABLE_COMMENT_ID = "COMMENT_ID";
     }
 

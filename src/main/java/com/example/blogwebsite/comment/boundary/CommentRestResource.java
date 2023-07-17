@@ -49,6 +49,20 @@ public class CommentRestResource {
         );
     }
 
+    @PostMapping("/LikeComment")
+    public Object like(@RequestParam UUID commentID, @RequestParam UUID userID) {
+        return ResponseUtil.get(
+                service.likeComment(commentID, userID)
+                , HttpStatus.OK
+        );
+    }
+
+//    @PutMapping("/UpdateComment")
+//    public Object updateComment(@RequestBody CommentUpdateDTO comment) {
+//        service.updateComment(comment, CommentUpdateDTO.class);
+//        return HttpStatus.OK;
+//    }
+
     @DeleteMapping("/DeleteComment")
     public Object deleteComment(@RequestParam UUID commentID) {
         service.deleteComment(commentID);
