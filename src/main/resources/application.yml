@@ -24,9 +24,9 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://dpg-chqbfundvk4goerbavn0-a.singapore-postgres.render.com:5432/plog
-    username: vanphuc2401
-    password: dn273FAZq6mt7FKd1SXnvNIzC1AqGDx6
+    url: jdbc:postgresql://103.82.132.83:5433/postgres
+    username: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -50,3 +50,7 @@ springdoc:
   swagger-ui:
     path: swagger-ui.html
     operationsSorter: method
+
+logging:
+  level:
+    org.springframework.security.web: DEBUG
