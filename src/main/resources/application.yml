@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
   forward-headers-strategy: framework
 spring:
   security:
@@ -24,7 +24,7 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://103.82.132.83:5433/postgres
+    url: jdbc:postgresql://lacvietquality.com:5433/postgres
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
