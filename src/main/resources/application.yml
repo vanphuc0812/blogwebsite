@@ -26,7 +26,7 @@ spring:
   datasource:
     url: jdbc:postgresql://lacvietquality.com:5433/postgres
     username: postgres
-    password: 1234
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
