@@ -24,7 +24,7 @@ spring:
           starttls:
             enable: true
   datasource:
-    url: jdbc:postgresql://lacvietquality.com:5433/postgres
+    url: ${POSTGRES_URL}
     username: postgres
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
