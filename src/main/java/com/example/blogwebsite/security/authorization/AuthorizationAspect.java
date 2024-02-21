@@ -25,13 +25,14 @@ public class AuthorizationAspect {
     }
     // define point cut
 
-    @Before("@annotation(TCHOperation)")
-    public void authorizeOperation(TCHOperation TCHOperation) {
-        log.info("Pointcut has been activated, operation = " + TCHOperation.name());
+    @Before("@annotation(PlogOperation)")
+    public void authorizeOperation(PlogOperation PlogOperation) {
+        log.info("Pointcut has been activated, operation = " + PlogOperation.name());
+        if (PlogOperation.name().equals("publicOperation")) return;
         // get current user
         String username = getCurrentUser();
         // check permission
-        if (!isPermitted(username, TCHOperation.name())) {
+        if (!isPermitted(username, PlogOperation.name())) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, "User is not permitted to use this operation. Please contact administrators for permissions");
         }
